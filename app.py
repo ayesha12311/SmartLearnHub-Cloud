@@ -10,7 +10,10 @@ from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__, static_folder='static', static_url_path='')
-app.secret_key = 'smartlearn-secret-key-change-in-production'
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "dev-secret"
+)
 
 
 DATABASE      = 'smartlearn.db'
