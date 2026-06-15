@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Learn HUb — Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="data.js"></script>
+</head>
+
+<body>
+
+  <!-- Background blobs -->
+  <div class="blob-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Top navigation bar -->
+  <nav class="topnav">
+    <div class="nav-brand" onclick="window.location.href='student.html'">
+      <div class="nav-logo">SL</div>
+      <div class="nav-title">Smart Learn Hub</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar" id="nav-avatar">S</div>
+        <span id="nav-name">Student</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="page-wrap">
+    <div class="page-inner">
+
+      <!-- Welcome banner -->
+      <div class="welcome-banner">
+        <div class="welcome-text">
+          <h2>Good Morning, <span id="s-name">Student</span>! ☀️</h2>
+          <p id="s-info">SmartLearn_Hub connected</p>
+        </div>
+        <div class="welcome-emoji">🎒</div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="stats-row">
+  <div class="prog-card">
+    <div class="prog-icon blue"></div>
+    <div class="prog-info"><p id="stat-chapters">–</p><span>Chapters Completed</span></div>
+  </div>
+  <div class="prog-card">
+    <div class="prog-icon green"></div>
+    <div class="prog-info"><p id="stat-quizzes">–</p><span>Quizzes Taken</span></div>
+  </div>
+  <div class="prog-card">
+    <div class="prog-icon orange"></div>
+    <div class="prog-info"><p id="stat-avg">–</p><span>Avg. Quiz Score</span></div>
+  </div>
+</div>
+
+      <!-- Subject cards -->
+
+      <!-- TAB HEADINGS -->
+      <div class="tab-header">
+        <div class="tab active" onclick="switchTab('subjects', event)">
+          📚 Your Subjects
+        </div>
+        <div class="tab" onclick="switchTab('papers', event)">
+          📝 Question Papers
+        </div>
+      </div>
+
+      <!-- SUBJECTS -->
+      <div id="subjects" class="tab-content active">
+        <div class="subject-grid">
+
+          <div class="subject-card math" onclick="goTo('Mathematics')">
+            <div class="subj-icon">➕</div>
+            <div class="subj-name">Mathematics</div>
+            <div class="subj-chapters">Tap to explore</div>
+            <div class="subj-progress">
+              <div class="subj-progress-fill" style="width:37%"></div>
+            </div>
+          </div>
+
+          <div class="subject-card science" onclick="goTo('Science')">
+            <div class="subj-icon">🔬</div>
+            <div class="subj-name">Science</div>
+            <div class="subj-chapters">Tap to explore</div>
+            <div class="subj-progress">
+              <div class="subj-progress-fill" style="width:50%;background:linear-gradient(90deg,#059669,#34d399)"></div>
+            </div>
+          </div>
+
+          <div class="subject-card english" onclick="goTo('English')">
+            <div class="subj-icon">📝</div>
+            <div class="subj-name">English</div>
+            <div class="subj-chapters">Tap to explore</div>
+            <div class="subj-progress">
+              <div class="subj-progress-fill" style="width:28%;background:linear-gradient(90deg,#dc2626,#f87171)"></div>
+            </div>
+          </div>
+
+          <div class="subject-card social" onclick="goTo('Social Studies')">
+            <div class="subj-icon">🌍</div>
+            <div class="subj-name">Social Studies</div>
+            <div class="subj-chapters">Tap to explore</div>
+            <div class="subj-progress">
+              <div class="subj-progress-fill" style="width:44%;background:linear-gradient(90deg,#d97706,#fbbf24)"></div>
+            </div>
+          </div>
+
+          <div class="subject-card computer" onclick="goTo('Computer Science')">
+            <div class="subj-icon">💻</div>
+            <div class="subj-name">Computer Science</div>
+            <div class="subj-chapters">Tap to explore</div>
+            <div class="subj-progress">
+              <div class="subj-progress-fill" style="width:16%;background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- QUESTION PAPERS -->
+      <div id="papers" class="tab-content">
+        <div class="subject-grid">
+
+          <div class="subject-card" onclick="openPaper('math')">
+            <div class="subj-icon">📄</div>
+            <div class="subj-name">Mathematics</div>
+            <div class="subj-chapters">5 Papers</div>
+          </div>
+
+          <div class="subject-card" onclick="openPaper('science')">
+            <div class="subj-icon">📄</div>
+            <div class="subj-name">Science</div>
+            <div class="subj-chapters">4 Papers</div>
+          </div>
+
+          <div class="subject-card" onclick="openPaper('english')">
+            <div class="subj-icon">📄</div>
+            <div class="subj-name">English</div>
+            <div class="subj-chapters">3 Papers</div>
+          </div>
+
+          <div class="subject-card" onclick="openPaper('social')">
+            <div class="subj-icon">📄</div>
+            <div class="subj-name">Social Studies</div>
+            <div class="subj-chapters">6 Papers</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+  <script>
+    /* Load student info from sessionStorage */
+    window.onload = function () {
+      const role = sessionStorage.getItem('sl_role');
+      if (role !== 'student') { window.location.href = 'index.html'; return; }
+      const name = sessionStorage.getItem('sl_name') || 'Student';
+      const cls = sessionStorage.getItem('sl_class') || '';
+      const roll = sessionStorage.getItem('sl_roll') || '';
+      document.getElementById('nav-avatar').textContent = name[0].toUpperCase();
+      document.getElementById('nav-name').textContent = name;
+      document.getElementById('s-name').textContent = name;
+      document.getElementById('s-info').textContent = cls + ' · Roll No. ' + roll + ' · SmartLearn_Box connected';
+      // Load real quiz stats for this student
+      
+      
+      if (roll) {
+  fetch('/api/my-results?roll=' + roll)
+    .then(r => r.json())
+    .then(mine => {
+            const quizCount = mine.length;
+            const avg = quizCount
+              ? Math.round(mine.reduce((s, r) => s + (r.marks / r.total) * 100, 0) / quizCount)
+              : 0;
+            document.getElementById('stat-quizzes').textContent = quizCount;
+            document.getElementById('stat-avg').textContent = avg + '%';
+          }).catch(() => {});
+      }
+      document.getElementById('stat-chapters').textContent = '0';
+    };
+
+    /* Go to chapter list for a subject */
+    function goTo(subject) {
+      sessionStorage.setItem('sl_subject', subject);
+      window.location.href = 'chapters.html';
+    }
+
+    /* Logout */
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+    function switchTab(tabId, event) {
+
+  document.getElementById("subjects").classList.remove("active");
+  document.getElementById("papers").classList.remove("active");
+
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.classList.remove("active");
+  });
+
+  document.getElementById(tabId).classList.add("active");
+  event.target.classList.add("active");
+}
+
+function openPaper(subject) {
+  sessionStorage.setItem('paper_subject', subject);
+  window.location.href = 'papers.html';
+}
+  </script>
+
+</body>
+
+</html>

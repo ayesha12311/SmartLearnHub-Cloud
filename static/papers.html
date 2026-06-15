@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Learn Hub — Papers</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="blob-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <nav class="topnav">
+    <div class="nav-brand" onclick="window.location.href='student.html'">
+      <div class="nav-logo">SL</div>
+      <div class="nav-title">Smart Learn Hub</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar" id="nav-avatar">S</div>
+        <span id="nav-name">Student</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-inner">
+      <button class="back-btn" onclick="window.location.href='student.html'">← Back</button>
+      <div class="chapter-header">
+        <h2 id="paper-title">📝 Question Papers</h2>
+        <p>Open and view uploaded papers</p>
+      </div>
+
+      <div id="papers-list"></div>
+    </div>
+  </div>
+
+  <script>
+    var SUBJECT_NAME_MAP = {
+      math: 'Mathematics',
+      science: 'Science',
+      english: 'English',
+      social: 'Social Studies',
+      computer: 'Computer Science'
+    };
+
+    window.onload = async function () {
+      const role = sessionStorage.getItem('sl_role');
+      if (role !== 'student') { window.location.href = 'index.html'; return; }
+
+      const name = sessionStorage.getItem('sl_name') || 'Student';
+      const subject = sessionStorage.getItem('paper_subject') || 'math';
+
+      document.getElementById('nav-avatar').textContent = name[0].toUpperCase();
+      document.getElementById('nav-name').textContent = name;
+      document.getElementById('paper-title').textContent = '📝 ' + (SUBJECT_NAME_MAP[subject] || 'Question Papers');
+
+      const box = document.getElementById('papers-list');
+
+      try {
+        const res = await fetch('/api/papers?subject=' + subject);
+        const papers = await res.json();
+
+        if (!papers.length) {
+          box.innerHTML = '<div class="empty-state"><p>📭</p><p>No papers uploaded yet.</p></div>';
+          return;
+        }
+
+        let html = '';
+        papers.forEach(function(p, i){
+          html += `
+            <div class="chapter-item">
+              <div class="ch-left">
+                <div class="ch-num">${i+1}</div>
+                <div class="ch-info">
+                  <h4>${p.title}</h4>
+                  <span>Question paper PDF</span>
+                </div>
+              </div>
+              <div class="ch-action-row">
+                <button class="ch-action-box notes" onclick="window.open('${p.url}','_blank')">
+                  <span class="box-icon">📄</span>
+                  <span>Open Paper</span>
+                  <span class="box-count">PDF</span>
+                </button>
+              </div>
+            </div>
+          `;
+        });
+        box.innerHTML = html;
+      } catch (e) {
+        console.error(e);
+        box.innerHTML = '<div class="empty-state"><p>⚠️</p><p>Could not load papers.</p></div>';
+      }
+    };
+
+    function logout(){
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

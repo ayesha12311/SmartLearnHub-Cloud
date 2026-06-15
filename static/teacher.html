@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher Dashboard – SmartLearn Hub</title>
+  <link rel="stylesheet" href="sty.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="theme.js"></script>
+
+  <style>
+    :root{
+      --sidebar-bg:#064e3b;
+      --purple-mid:#059669;
+      --purple-dark:#047857;
+      --purple-light:#34d399;
+      --purple-pale:#d1fae5;
+      --purple-bg:#ecfdf5;
+      --orange:#d97706;
+      --green:#059669;
+      --red:#dc2626;
+      --blue:#2563eb;
+    }
+
+    body{background:var(--purple-bg);}
+
+    .teacher-badge{
+      display:inline-flex;align-items:center;gap:6px;
+      background:var(--purple-pale);color:#065f46;border-radius:50px;
+      padding:4px 12px;font-size:0.78rem;font-weight:700;margin-bottom:18px;
+    }
+
+    .t-section{display:none;}
+    .t-section.active{display:block;}
+
+    .t-card{
+      background:var(--white);
+      border-radius:var(--radius);
+      padding:22px 24px;
+      box-shadow:var(--shadow);
+    }
+
+    .t-card-title{
+      font-family:var(--font-display);
+      font-size:1rem;
+      font-weight:800;
+      color:var(--text-main);
+      border-left:4px solid var(--purple-mid);
+      padding-left:11px;
+      margin-bottom:18px;
+    }
+
+    .teacher-info-card{
+      background:linear-gradient(135deg,var(--purple-mid),var(--purple-dark));
+      border-radius:var(--radius);
+      padding:18px 22px;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      box-shadow:var(--shadow-lg);
+      margin-bottom:22px;
+    }
+
+    .t-avatar-big{
+      width:54px;height:54px;background:rgba(255,255,255,0.25);
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.4rem;font-weight:900;flex-shrink:0;
+    }
+
+    .teacher-info-card h2{font-size:1.15rem;font-weight:800;}
+    .teacher-info-card p{font-size:0.82rem;opacity:0.9;margin-top:2px;}
+
+    .t-table-wrap{
+      background:var(--white);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .t-table{width:100%;border-collapse:collapse;}
+    .t-table thead tr{background:var(--purple-pale);}
+    .t-table th{
+      padding:12px 16px;text-align:left;font-size:0.78rem;font-weight:800;
+      color:var(--purple-dark);text-transform:uppercase;letter-spacing:0.7px;
+    }
+    .t-table td{
+      padding:13px 16px;font-size:0.86rem;color:var(--text-main);
+      border-bottom:1px solid var(--gray-100);
+    }
+    .t-table tbody tr:last-child td{border-bottom:none;}
+    .t-table tbody tr:hover td{background:#f0fdf4;}
+
+    .prog-cell{display:flex;align-items:center;gap:10px;}
+    .prog-bar-wrap{
+      flex:1;max-width:120px;height:7px;background:var(--gray-200);
+      border-radius:10px;overflow:hidden;
+    }
+    .prog-bar-fill{
+      height:100%;border-radius:10px;
+      background:linear-gradient(90deg,var(--purple-mid),var(--purple-light));
+    }
+    .prog-pct{font-size:0.78rem;font-weight:700;color:var(--purple-mid);}
+
+    .perf-badge{
+      padding:3px 11px;border-radius:99px;font-size:0.75rem;font-weight:700;
+    }
+    .perf-badge.excellent{background:#d1fae5;color:#065f46;}
+    .perf-badge.good{background:#dbeafe;color:#1e40af;}
+    .perf-badge.average{background:#fef3c7;color:#92400e;}
+    .perf-badge.poor{background:#fee2e2;color:#991b1b;}
+
+    .subj-tab-bar{
+      display:flex;background:var(--white);border-radius:14px;
+      padding:6px;box-shadow:var(--shadow);overflow:hidden;
+      margin-bottom:22px;width:fit-content;gap:4px;
+    }
+
+    .subj-tab-btn{
+      padding:10px 24px;font-size:0.88rem;font-weight:700;background:none;
+      border:none;border-radius:10px;color:var(--text-sub);cursor:pointer;
+      transition:all 0.2s;display:flex;align-items:center;gap:7px;
+    }
+    .subj-tab-btn:hover{background:#f0fdf4;color:var(--purple-dark);}
+    .subj-tab-btn.active{
+      background:var(--purple-mid);color:#fff;
+      box-shadow:0 2px 10px rgba(5,150,105,0.25);
+    }
+
+    .subj-panel{display:none;}
+    .subj-panel.active{display:block;}
+
+    .t-subject-grid{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+      gap:18px;margin-bottom:22px;
+    }
+
+    .t-subject-card{
+      padding:24px 20px;border-radius:20px;background:var(--white);
+      border:2px solid transparent;cursor:pointer;transition:all 0.25s;
+      box-shadow:var(--shadow);position:relative;overflow:hidden;
+    }
+
+    .t-subject-card::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:4px;
+      border-radius:20px 20px 0 0;
+    }
+
+    .t-subject-card:hover{
+      transform:translateY(-4px);
+      box-shadow:var(--shadow-lg);
+    }
+
+    .t-subject-card.math::before{background:linear-gradient(90deg,#4f46e5,#818cf8);}
+    .t-subject-card.science::before{background:linear-gradient(90deg,#059669,#34d399);}
+    .t-subject-card.english::before{background:linear-gradient(90deg,#dc2626,#f87171);}
+    .t-subject-card.social::before{background:linear-gradient(90deg,#d97706,#fbbf24);}
+    .t-subject-card.computer::before{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+
+    .ts-icon{font-size:36px;margin-bottom:12px;}
+    .ts-name{font-size:15px;font-weight:800;color:var(--text-main);margin-bottom:4px;}
+    .ts-meta{font-size:12px;color:var(--text-sub);}
+
+    .t-subj-detail{display:none;}
+    .t-subj-detail.active{display:block;}
+
+    .t-subj-detail-header{
+      display:flex;align-items:center;gap:14px;margin-bottom:20px;
+      padding:16px 20px;background:linear-gradient(135deg,var(--purple-mid),var(--purple-dark));
+      border-radius:var(--radius);color:#fff;
+    }
+
+    .t-subj-detail-header h2{font-size:1.1rem;font-weight:800;}
+
+    .back-btn-t{
+      background:rgba(255,255,255,0.2);border:none;border-radius:var(--radius-sm);
+      color:#fff;padding:7px 14px;font-size:0.82rem;font-weight:700;cursor:pointer;
+      display:flex;align-items:center;gap:6px;transition:background 0.2s;
+    }
+
+    .back-btn-t:hover{background:rgba(255,255,255,0.3);}
+
+    .chapter-create-box{
+      background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+      padding:18px 20px;margin-bottom:18px;
+    }
+
+    .chapter-create-row{
+      display:flex;gap:12px;align-items:end;flex-wrap:wrap;
+    }
+
+    .chapter-create-col{
+      display:flex;flex-direction:column;gap:6px;min-width:220px;flex:1;
+    }
+
+    .chapter-create-col label{
+      font-size:0.82rem;font-weight:700;color:var(--text-sub);
+    }
+
+    .chapter-create-col input{
+      width:100%;padding:10px 14px;border:2px solid var(--gray-200);
+      border-radius:var(--radius-sm);font-size:0.9rem;font-family:var(--font-main);
+      outline:none;background:var(--gray-100);color:var(--text-main);
+    }
+
+    .chapter-create-col input:focus{
+      border-color:var(--purple-mid);background:white;
+      box-shadow:0 0 0 3px rgba(5,150,105,0.1);
+    }
+
+    .btn-green{
+      background:linear-gradient(90deg,var(--purple-mid),#10b981);
+      color:white;border:none;padding:11px 22px;border-radius:var(--radius-sm);
+      font-family:var(--font-display);font-weight:800;font-size:0.92rem;
+      cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+      transition:transform 0.15s,box-shadow 0.15s;
+      box-shadow:0 4px 14px rgba(5,150,105,0.3);
+    }
+
+    .btn-green:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(5,150,105,0.4);
+    }
+
+    .btn-outline-green{
+      background:transparent;color:var(--purple-mid);border:2px solid var(--purple-mid);
+      padding:9px 16px;border-radius:var(--radius-sm);
+      font-family:var(--font-display);font-weight:700;font-size:0.84rem;
+      cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all 0.18s;
+    }
+
+    .btn-outline-green:hover{background:var(--purple-mid);color:white;}
+
+    .btn-outline-orange{
+      background:transparent;color:var(--orange);border:2px solid var(--orange);
+      padding:9px 16px;border-radius:var(--radius-sm);
+      font-family:var(--font-display);font-weight:700;font-size:0.84rem;
+      cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all 0.18s;
+    }
+
+    .btn-outline-orange:hover{background:var(--orange);color:white;}
+
+    .btn-outline-purple{
+      background:transparent;color:#7c3aed;border:2px solid #7c3aed;
+      padding:9px 16px;border-radius:var(--radius-sm);
+      font-family:var(--font-display);font-weight:700;font-size:0.84rem;
+      cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:all 0.18s;
+    }
+
+    .btn-outline-purple:hover{background:#7c3aed;color:white;}
+
+    .chapter-list{
+      display:flex;flex-direction:column;gap:12px;
+    }
+
+    .chapter-card{
+      background:var(--white);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .chapter-head{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;padding:14px 18px;cursor:pointer;
+      transition:background 0.18s;
+    }
+
+    .chapter-head:hover{background:#f0fdf4;}
+
+    .chapter-left{
+      display:flex;align-items:center;gap:12px;min-width:0;
+    }
+
+    .chapter-badge{
+      width:34px;height:34px;border-radius:10px;background:var(--purple-pale);
+      color:var(--purple-dark);display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:0.84rem;flex-shrink:0;
+    }
+
+    .chapter-text{min-width:0;}
+    .chapter-title{
+      font-size:0.92rem;font-weight:800;color:var(--text-main);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .chapter-subtitle{
+      font-size:0.75rem;color:var(--text-sub);margin-top:2px;
+    }
+
+    .chapter-right{
+      display:flex;align-items:center;gap:8px;flex-shrink:0;
+    }
+
+    .btn-delete-chapter{
+      background:#fee2e2;color:#991b1b;border:none;border-radius:8px;
+      padding:6px 11px;font-size:0.76rem;font-weight:700;cursor:pointer;
+    }
+    .btn-delete-chapter:hover{background:#fecaca;}
+
+    .chapter-body{
+      display:none;padding:16px 18px 18px;background:#f9fafb;
+      border-top:1px solid var(--gray-100);
+    }
+
+    .chapter-body.open{display:block;}
+
+    .chapter-upload-row{
+      display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;
+    }
+
+    .chapter-files{
+      display:flex;flex-direction:column;gap:8px;
+    }
+
+    .chapter-file-item{
+      background:var(--white);border-radius:10px;padding:10px 14px;
+      display:flex;align-items:center;gap:12px;
+      box-shadow:0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .chapter-file-icon{
+      width:34px;height:34px;border-radius:9px;background:var(--purple-pale);
+      color:var(--purple-dark);display:flex;align-items:center;justify-content:center;
+      font-size:0.9rem;flex-shrink:0;
+    }
+
+    .chapter-file-info{flex:1;min-width:0;}
+    .chapter-file-info strong{
+      display:block;font-size:0.84rem;font-weight:700;color:var(--text-main);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .chapter-file-info span{
+      font-size:0.74rem;color:var(--text-sub);
+    }
+
+    .chapter-file-actions{display:flex;gap:7px;flex-shrink:0;}
+
+    .btn-view{
+      padding:5px 13px;border-radius:var(--radius-sm);
+      background:var(--purple-pale);color:var(--purple-dark);
+      border:none;font-size:0.78rem;font-weight:700;cursor:pointer;
+    }
+    .btn-view:hover{background:var(--purple-mid);color:#fff;}
+
+    .btn-del{
+      padding:5px 13px;border-radius:var(--radius-sm);
+      background:#fee2e2;color:var(--red);
+      border:none;font-size:0.78rem;font-weight:700;cursor:pointer;
+    }
+    .btn-del:hover{background:var(--red);color:#fff;}
+
+    .empty-box{
+      text-align:center;padding:26px;color:var(--text-sub);font-size:0.88rem;
+      background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);
+    }
+
+    .upload-actions{
+      display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px;
+    }
+
+    .btn-upload{
+      display:flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--radius-sm);
+      font-size:0.84rem;font-weight:700;border:2px solid;cursor:pointer;background:var(--white);
+      transition:all 0.18s;
+    }
+
+    .btn-upload.paper{border-color:#7c3aed;color:#7c3aed;}
+    .btn-upload.paper:hover{background:#7c3aed;color:#fff;}
+
+    .uploaded-list{display:flex;flex-direction:column;gap:10px;}
+    .uploaded-item{
+      background:var(--white);border-radius:var(--radius-sm);padding:13px 18px;
+      display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);
+    }
+    .uploaded-icon{
+      width:36px;height:36px;border-radius:9px;background:var(--purple-pale);
+      color:var(--purple-dark);display:flex;align-items:center;justify-content:center;
+      font-size:1rem;flex-shrink:0;
+    }
+    .uploaded-info{flex:1;min-width:0;}
+    .uploaded-info strong{
+      font-size:0.88rem;font-weight:700;display:block;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .uploaded-info span{font-size:0.76rem;color:var(--text-sub);}
+    .item-actions{display:flex;gap:7px;flex-shrink:0;}
+
+    .quiz-filter-bar{
+      background:var(--white);border-radius:var(--radius);padding:18px 22px;
+      box-shadow:var(--shadow);display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;
+      margin-bottom:22px;
+    }
+
+    .filter-group{
+      display:flex;flex-direction:column;gap:5px;
+    }
+
+    .filter-group label{
+      font-size:0.76rem;font-weight:700;color:var(--text-sub);
+    }
+
+    .filter-group select{
+      border:2px solid var(--gray-200);border-radius:var(--radius-sm);
+      padding:8px 14px;font-size:0.85rem;outline:none;min-width:160px;
+      cursor:pointer;transition:border-color 0.2s;background:var(--white);
+      font-family:var(--font-main);
+    }
+
+    .filter-group select:focus{border-color:var(--purple-mid);}
+
+    .btn-filter{
+      padding:9px 22px;background:var(--purple-mid);color:#fff;border:none;
+      border-radius:var(--radius-sm);font-size:0.85rem;font-weight:700;cursor:pointer;
+    }
+    .btn-filter:hover{background:var(--purple-dark);}
+
+    .btn-reset{
+      padding:9px 18px;background:var(--gray-100);color:var(--gray-600);border:none;
+      border-radius:var(--radius-sm);font-size:0.85rem;font-weight:700;cursor:pointer;
+    }
+    .btn-reset:hover{background:var(--gray-200);}
+
+    .file-input-hidden{display:none;}
+
+    /* SETTINGS SECTION */
+    .settings-grid{
+      display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start;
+    }
+
+    .settings-nav{
+      background:var(--white);border-radius:var(--radius);padding:8px;
+      box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;
+    }
+
+    .settings-nav-item{
+      display:flex;align-items:center;gap:10px;padding:11px 14px;
+      border-radius:var(--radius-sm);font-size:0.88rem;font-weight:600;
+      color:var(--text-sub);cursor:pointer;transition:all 0.18s;border:none;
+      background:none;width:100%;text-align:left;font-family:var(--font-main);
+    }
+
+    .settings-nav-item i{width:18px;text-align:center;}
+    .settings-nav-item:hover{background:var(--purple-pale);color:var(--purple-mid);}
+    .settings-nav-item.active{background:var(--purple-mid);color:white;}
+
+    .settings-panel{display:none;flex-direction:column;gap:16px;}
+    .settings-panel.active{display:flex;}
+
+    .settings-card{
+      background:var(--white);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);
+    }
+
+    .settings-card h3{
+      font-family:var(--font-display);font-size:1rem;font-weight:800;color:var(--text-main);
+      margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--gray-100);
+      display:flex;align-items:center;gap:8px;
+    }
+
+    .settings-card h3 i{color:var(--purple-mid);}
+
+    .setting-row{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 0;border-bottom:1px solid var(--gray-100);
+      gap:16px;
+    }
+    .setting-row:last-child{border-bottom:none;padding-bottom:0;}
+
+    .setting-label{font-size:0.88rem;font-weight:600;color:var(--text-main);}
+    .setting-sub{font-size:0.76rem;color:var(--text-sub);margin-top:2px;}
+
+    .toggle{position:relative;width:46px;height:26px;display:inline-block;flex-shrink:0;}
+    .toggle input{opacity:0;width:0;height:0;}
+    .toggle-slider{
+      position:absolute;inset:0;background:var(--gray-200);border-radius:26px;
+      cursor:pointer;transition:background 0.2s;
+    }
+    .toggle-slider:before{
+      content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:white;
+      border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle input:checked + .toggle-slider{background:var(--purple-mid);}
+    .toggle input:checked + .toggle-slider:before{transform:translateX(20px);}
+
+    .settings-input{
+      width:100%;padding:10px 14px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);
+      font-size:0.9rem;font-family:var(--font-main);outline:none;background:var(--gray-100);
+      transition:border-color 0.2s;color:var(--text-main);
+    }
+
+    .settings-input:focus{
+      border-color:var(--purple-mid);background:white;
+      box-shadow:0 0 0 3px rgba(5,150,105,0.1);
+    }
+
+    .field-group{
+      display:flex;flex-direction:column;gap:6px;margin-bottom:14px;
+    }
+
+    .field-group label{
+      font-size:0.82rem;font-weight:600;color:var(--text-sub);
+    }
+
+    .theme-options{
+      display:flex;gap:12px;flex-wrap:wrap;padding-bottom:6px;
+    }
+
+    .theme-dot{
+      width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;
+      transition:transform 0.18s,border-color 0.18s,box-shadow 0.18s;position:relative;
+    }
+
+    .theme-dot:hover{transform:scale(1.12);}
+    .theme-dot.selected{border-color:white;box-shadow:0 0 0 3px var(--purple-mid);}
+    .theme-dot::after{
+      content:attr(title);position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);
+      font-size:0.68rem;color:var(--text-sub);white-space:nowrap;font-weight:600;
+    }
+
+    .slider-row{display:flex;align-items:center;gap:14px;}
+    .slider-row input[type="range"]{flex:1;accent-color:var(--purple-mid);}
+    .slider-val{
+      min-width:36px;font-size:0.88rem;font-weight:700;color:var(--purple-mid);text-align:right;
+    }
+
+    .btn-save{
+      background:linear-gradient(90deg,var(--purple-mid),#10b981);color:white;border:none;
+      padding:11px 28px;border-radius:var(--radius-sm);font-family:var(--font-display);
+      font-weight:800;font-size:0.92rem;cursor:pointer;display:inline-flex;align-items:center;
+      gap:8px;transition:transform 0.15s,box-shadow 0.15s;
+      box-shadow:0 4px 14px rgba(5,150,105,0.3);
+    }
+
+    .btn-save:hover{
+      transform:translateY(-1px);
+      box-shadow:0 6px 20px rgba(5,150,105,0.4);
+    }
+
+    .btn-danger{
+      background:#fee2e2;color:#b91c1c;border:none;padding:10px 20px;border-radius:var(--radius-sm);
+      font-family:var(--font-display);font-weight:700;font-size:0.88rem;cursor:pointer;
+      display:inline-flex;align-items:center;gap:7px;
+    }
+    .btn-danger:hover{background:#fecaca;}
+
+    .save-toast{
+      position:fixed;bottom:28px;right:28px;background:var(--purple-dark);color:white;
+      padding:12px 22px;border-radius:12px;font-size:0.9rem;font-weight:600;
+      display:none;align-items:center;gap:8px;box-shadow:var(--shadow-lg);z-index:999;
+    }
+    .save-toast.show{display:flex;}
+
+    .profile-avatar-wrap{
+      display:flex;align-items:center;gap:18px;margin-bottom:20px;
+    }
+
+    .big-avatar{
+      width:70px;height:70px;
+      background:linear-gradient(135deg,var(--purple-mid),#10b981);
+      border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:1.8rem;font-weight:900;color:white;font-family:var(--font-display);
+    }
+
+    .avatar-info h3{font-size:1rem;font-weight:800;}
+    .avatar-info p{font-size:0.82rem;color:var(--text-sub);}
+
+    @media (max-width: 900px){
+      .settings-grid{grid-template-columns:1fr;}
+    }
+
+    @media (max-width: 700px){
+      .chapter-file-item,
+      .uploaded-item{
+        flex-direction:column;align-items:flex-start;
+      }
+      .chapter-file-actions,
+      .item-actions{width:100%;justify-content:flex-end;}
+    }
+  </style>
+  <script src="data.js"></script>
+</head>
+<!-- QUIZ BUILDER MODAL -->
+<div id="quizBuilderModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:700px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.2);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <h2 style="font-size:1.1rem;font-weight:800;color:#047857;display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-circle-question"></i> Create Quiz</h2>
+      <button onclick="closeQuizBuilder()" style="background:#fee2e2;border:none;border-radius:8px;color:#991b1b;width:32px;height:32px;font-size:1rem;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-bottom:12px;">
+      <label style="font-size:0.8rem;font-weight:700;color:#6b7280;">Quiz Title</label>
+      <input type="text" id="qb-title" placeholder="e.g. Mid-Term Quiz – Algebra" style="padding:10px 14px;border:2px solid #e5e7eb;border-radius:8px;font-size:0.9rem;outline:none;font-family:inherit;"/>
+    </div>
+    <div id="qb-for" style="font-size:0.8rem;color:#6b7280;font-weight:600;margin-bottom:14px;"></div>
+    <hr style="border:none;border-top:1px solid #f3f4f6;margin:0 0 16px;"/>
+    <div id="qb-questions-wrap"></div>
+    <button onclick="addQuestion()" style="width:100%;padding:10px;background:#d1fae5;color:#065f46;border:2px dashed #059669;border-radius:8px;font-size:0.86rem;font-weight:700;cursor:pointer;margin-bottom:16px;"><i class="fa-solid fa-plus"></i> Add Another Question</button>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button onclick="closeQuizBuilder()" style="padding:10px 20px;background:#f3f4f6;color:#374151;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Cancel</button>
+      <button onclick="saveQuiz()" style="padding:10px 26px;background:linear-gradient(90deg,#059669,#10b981);color:white;border:none;border-radius:8px;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:8px;"><i class="fa-solid fa-floppy-disk"></i> Save Quiz</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.qb-q-block{background:#f9fafb;border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+.qb-q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.qb-q-num{font-size:0.78rem;font-weight:800;color:#047857;background:#d1fae5;padding:2px 10px;border-radius:99px;}
+.qb-q-input{width:100%;padding:9px 13px;border:2px solid #e5e7eb;border-radius:8px;font-size:0.88rem;margin-bottom:12px;outline:none;font-family:inherit;}
+.qb-q-input:focus{border-color:#059669;}
+.qb-opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.qb-opt-row{display:flex;align-items:center;gap:7px;background:#fff;border-radius:8px;padding:7px 10px;border:1px solid #e5e7eb;}
+.qb-opt-radio{display:flex;align-items:center;gap:4px;font-size:0.74rem;color:#059669;font-weight:700;white-space:nowrap;cursor:pointer;}
+.qb-opt-radio input[type="radio"]{accent-color:#059669;width:14px;height:14px;}
+.qb-opt-input{flex:1;border:none;outline:none;font-size:0.84rem;font-family:inherit;background:transparent;}
+.qb-hint{font-size:0.74rem;color:#9ca3af;margin-top:8px;}
+</style>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <span>SmartLearnHub</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" id="nav-dashboard" onclick="showSection('dashboard');return false;">
+        <i class="fa-solid fa-house"></i><span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-students" onclick="showSection('students');return false;">
+        <i class="fa-solid fa-users"></i><span>Student Details</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-subjects" onclick="showSection('subjects');return false;">
+        <i class="fa-solid fa-book-open"></i><span>Subject Name</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-quiz" onclick="showSection('quiz');return false;">
+        <i class="fa-solid fa-chart-bar"></i><span>Quiz Result</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-settings" onclick="showSection('settings');return false;">
+        <i class="fa-solid fa-gear"></i><span>Settings</span>
+      </a>
+    </nav>
+
+    <a href="index.html" class="nav-item logout">
+      <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+    </a>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-header" style="background:linear-gradient(135deg,#059669,#047857);">
+      <div class="header-left">
+        <div class="header-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
+        <div>
+          <h1>Teacher Dashboard</h1>
+          <p>Manage content, students, and quizzes</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;">
+        <div class="teacher-badge" style="margin:0;"><i class="fa-solid fa-shield-halved"></i> Teacher Mode</div>
+        <div class="header-right"><div class="user-avatar">TC</div></div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+  <div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fa-solid fa-users"></i></div>
+    <div class="stat-info"><span class="stat-value" id="stat-students">—</span><span class="stat-label">My Students</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon purple"><i class="fa-solid fa-book-open"></i></div>
+    <div class="stat-info"><span class="stat-value" id="stat-chapters">—</span><span class="stat-label">Chapters Added</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon orange"><i class="fa-solid fa-circle-question"></i></div>
+    <div class="stat-info"><span class="stat-value" id="stat-quizzes">—</span><span class="stat-label">Quizzes Created</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fa-solid fa-chart-line"></i></div>
+    <div class="stat-info"><span class="stat-value" id="stat-avg">—</span><span class="stat-label">Avg. Score</span></div>
+  </div>
+</div>
+      <div class="t-card">
+        <div class="t-card-title">Student Overview</div>
+        <div class="t-table-wrap">
+          <table class="t-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Grade</th>
+                <th>Progress</th>
+                <th>Last Quiz Score</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="dash-student-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- STUDENT DETAILS -->
+    <section class="t-section" id="sec-students">
+      <div class="teacher-info-card">
+        <div class="t-avatar-big">TC</div>
+        <div>
+          <h2 id="teacher-name-display">Mrs. Tanuja Chaudhari</h2>
+          <p id="teacher-class-display">Class Teacher – Grade 10 | Science &amp; Mathematics</p>
+        </div>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-title">Student Details</div>
+        <div class="t-table-wrap">
+          <table class="t-table">
+            <thead>
+              <tr>
+                <th>Sr. No.</th>
+                <th>Name</th>
+                <th>Roll No.</th>
+                <th>Progress</th>
+              </tr>
+            </thead>
+            <tbody id="student-detail-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUBJECT NAME -->
+    <section class="t-section" id="sec-subjects">
+      <div class="subj-tab-bar">
+        <button class="subj-tab-btn active" onclick="switchSubjTab('subjects-panel', this)">
+          <i class="fa-solid fa-book"></i> Your Subjects
+        </button>
+        <button class="subj-tab-btn" onclick="switchSubjTab('papers-panel', this)">
+          <i class="fa-solid fa-file-lines"></i> Question Papers
+        </button>
+      </div>
+
+      <!-- SUBJECTS PANEL -->
+      <div class="subj-panel active" id="subjects-panel">
+        <div id="subj-grid-view">
+          <div class="t-card-title" style="margin-bottom:14px;">Select a Subject</div>
+          <div class="t-subject-grid" id="subjects-grid-container"></div>
+        </div>
+
+        <div class="t-subj-detail" id="subj-detail-view">
+          <div class="t-subj-detail-header">
+            <button class="back-btn-t" onclick="backToSubjGrid()">
+              <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            <h2 id="subj-detail-title">Mathematics</h2>
+          </div>
+
+          <div class="chapter-create-box">
+            <div class="chapter-create-row">
+              <div class="chapter-create-col">
+                <label>Chapter Title</label>
+                <input type="text" id="chapter-name-input" placeholder="e.g. Ch 1: Algebra"/>
+              </div>
+              <button class="btn-green" onclick="addChapter()">
+                <i class="fa-solid fa-plus"></i> Create Chapter
+              </button>
+            </div>
+          </div>
+
+          <div class="t-card">
+            <div class="t-card-title">Chapters &amp; Content</div>
+            <div class="chapter-list" id="chapter-accordion"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUESTION PAPERS PANEL -->
+      <div class="subj-panel" id="papers-panel">
+        <div id="papers-grid-view">
+          <div class="t-card-title" style="margin-bottom:14px;">Select a Subject</div>
+          <div class="t-subject-grid" id="papers-grid-container"></div>
+        </div>
+
+        <div class="t-subj-detail" id="papers-detail-view">
+          <div class="t-subj-detail-header">
+            <button class="back-btn-t" onclick="backToPapersGrid()">
+              <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+            <h2 id="papers-detail-title">Mathematics</h2>
+          </div>
+
+          <div class="upload-actions">
+            <button class="btn-upload paper" onclick="triggerPaperUpload()">
+              <i class="fa-solid fa-file-upload"></i> Upload Question Paper
+            </button>
+          </div>
+
+          <input type="file" id="upload-paper-input" class="file-input-hidden" accept=".pdf,.doc,.docx" onchange="handlePaperUpload(event)">
+
+          <div class="t-card">
+            <div class="t-card-title">Question Papers</div>
+            <div class="uploaded-list" id="papers-uploaded-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ RESULT -->
+    <section class="t-section" id="sec-quiz">
+      <div class="quiz-filter-bar">
+        <div class="filter-group">
+          <label>Subject</label>
+          <select id="filter-subject" onchange="updateChapterFilter()">
+            <option value="">All Subjects</option>
+            <option value="Mathematics">Mathematics</option>
+            <option value="Science">Science</option>
+            <option value="English">English</option>
+            <option value="Social Studies">Social Studies</option>
+            <option value="Computer Science">Computer Science</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Chapter</label>
+          <select id="filter-chapter">
+            <option value="">All Chapters</option>
+          </select>
+        </div>
+
+        <button class="btn-filter" onclick="applyQuizFilter()"><i class="fa-solid fa-filter"></i> Apply Filter</button>
+        <button class="btn-reset" onclick="resetQuizFilter()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+      </div>
+
+      <div class="t-card">
+        <div class="t-card-title">Quiz Results</div>
+        <div class="t-table-wrap">
+          <table class="t-table">
+            <thead>
+              <tr>
+                <th>Sr. No.</th>
+                <th>Student Name</th>
+                <th>Roll No.</th>
+                <th>Subject</th>
+                <th>Chapter</th>
+                <th>Quiz</th>
+                <th>Marks</th>
+                <th>Performance</th>
+              </tr>
+            </thead>
+            <tbody id="quiz-result-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="t-section" id="sec-settings">
+      <div class="settings-grid">
+        <div class="settings-nav">
+          <button class="settings-nav-item active" onclick="showSettingsPanel('profile', this)">
+            <i class="fa-solid fa-user"></i> Profile
+          </button>
+          <button class="settings-nav-item" onclick="showSettingsPanel('appearance', this)">
+            <i class="fa-solid fa-palette"></i> Appearance
+          </button>
+          <button class="settings-nav-item" onclick="showSettingsPanel('credentials', this)">
+            <i class="fa-solid fa-lock"></i> Login Credentials
+          </button>
+          <button class="settings-nav-item" onclick="showSettingsPanel('preferences', this)">
+            <i class="fa-solid fa-bell"></i> Preferences
+          </button>
+          <button class="settings-nav-item" onclick="showSettingsPanel('about', this)">
+            <i class="fa-solid fa-circle-info"></i> About
+          </button>
+        </div>
+
+        <div>
+          <!-- Profile -->
+          <div class="settings-panel active" id="panel-profile">
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-user"></i> My Profile</h3>
+
+              <div class="profile-avatar-wrap">
+                <div class="big-avatar" id="bigAvatar">T</div>
+                <div class="avatar-info">
+                  <h3 id="displayName">Teacher User</h3>
+                  <p id="displayRole">Role: Teacher</p>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <label>Full Name</label>
+                <input class="settings-input" type="text" id="profileName" placeholder="Your full name">
+              </div>
+
+              <div class="field-group">
+                <label>Class / Grade</label>
+                <input class="settings-input" type="text" id="profileGrade" placeholder="e.g. 10th Grade">
+              </div>
+
+              <div class="field-group">
+                <label>School Name</label>
+                <input class="settings-input" type="text" id="profileSchool" placeholder="e.g. ABC High School">
+              </div>
+
+              <button class="btn-save" onclick="saveProfile()">
+                <i class="fa-solid fa-floppy-disk"></i> Save Profile
+              </button>
+            </div>
+          </div>
+
+          <!-- Appearance -->
+          <div class="settings-panel" id="panel-appearance">
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-palette"></i> Theme Color</h3>
+              <div class="theme-options">
+                <div class="theme-dot selected" style="background:#059669" title="Green" onclick="applyTheme('#059669','#047857','#064e3b',this)"></div>
+                <div class="theme-dot" style="background:#2563eb" title="Blue" onclick="applyTheme('#2563eb','#1d4ed8','#1e3a8a',this)"></div>
+                <div class="theme-dot" style="background:#7c3aed" title="Purple" onclick="applyTheme('#7c3aed','#5b21b6','#4c1d95',this)"></div>
+                <div class="theme-dot" style="background:#dc2626" title="Red" onclick="applyTheme('#dc2626','#b91c1c','#7f1d1d',this)"></div>
+                <div class="theme-dot" style="background:#d97706" title="Orange" onclick="applyTheme('#d97706','#b45309','#78350f',this)"></div>
+                <div class="theme-dot" style="background:#0891b2" title="Teal" onclick="applyTheme('#0891b2','#0e7490','#164e63',this)"></div>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-text-height"></i> Display Options</h3>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Text Size</div>
+                  <div class="setting-sub">Adjust for readability</div>
+                </div>
+                <div class="slider-row" style="min-width:180px;">
+                  <input type="range" min="12" max="20" value="15" id="fontSizeSlider"
+                    oninput="document.getElementById('fontSizeVal').textContent=this.value+'px';document.documentElement.style.fontSize=this.value+'px'">
+                  <span class="slider-val" id="fontSizeVal">15px</span>
+                </div>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Dark Mode</div>
+                  <div class="setting-sub">Easy on eyes in low light</div>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Compact View</div>
+                  <div class="setting-sub">Show more content</div>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Credentials -->
+          <div class="settings-panel" id="panel-credentials">
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-user-lock"></i> Teacher Login</h3>
+
+              <div class="field-group">
+                <label>Username</label>
+                <input class="settings-input" type="text" placeholder="teacher username">
+              </div>
+
+              <div class="field-group">
+                <label>Password</label>
+                <input class="settings-input" type="password" placeholder="teacher password">
+              </div>
+
+              <p style="font-size:0.78rem;color:var(--text-sub);margin-top:8px;">
+                Edit the <code>CREDENTIALS</code> object in <code>login.html</code> to make permanent changes.
+              </p>
+
+              <button class="btn-save" onclick="showToast()">
+                <i class="fa-solid fa-floppy-disk"></i> Save Credentials
+              </button>
+            </div>
+          </div>
+
+          <!-- Preferences -->
+          <div class="settings-panel" id="panel-preferences">
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-sliders"></i> Learning Preferences</h3>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Auto-play next video</div>
+                  <div class="setting-sub">Auto-play next chapter</div>
+                </div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Show progress bar</div>
+                  <div class="setting-sub">Chapter completion indicator</div>
+                </div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Quiz hints</div>
+                  <div class="setting-sub">Show hints on wrong answer</div>
+                </div>
+                <label class="toggle"><input type="checkbox"><span class="toggle-slider"></span></label>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Sound effects</div>
+                  <div class="setting-sub">Sounds on quiz results</div>
+                </div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+              </div>
+
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Show streak counter</div>
+                  <div class="setting-sub">Daily learning streak</div>
+                </div>
+                <label class="toggle"><input type="checkbox" checked><span class="toggle-slider"></span></label>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-language"></i> Language</h3>
+              <div class="field-group">
+                <label>Interface Language</label>
+                <select class="settings-input">
+                  <option>English</option>
+                  <option>Hindi</option>
+                  <option>Marathi</option>
+                  <option>Gujarati</option>
+                  <option>Tamil</option>
+                  <option>Telugu</option>
+                </select>
+              </div>
+
+              <button class="btn-save" onclick="showToast()">
+                <i class="fa-solid fa-floppy-disk"></i> Save Preferences
+              </button>
+            </div>
+          </div>
+
+          <!-- About -->
+          <div class="settings-panel" id="panel-about">
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-circle-info"></i> About SmartLearn</h3>
+
+              <div style="text-align:center;padding:20px;">
+                <div style="font-size:3rem;margin-bottom:8px;">🎓</div>
+                <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--purple-dark);">SmartLearn</div>
+                <div style="color:var(--text-sub);font-size:0.85rem;margin-top:4px;">Offline Education Platform v1.0.0</div>
+              </div>
+
+              <div class="setting-row">
+                <div class="setting-label">Platform</div>
+                <div style="font-size:0.85rem;color:var(--text-sub);">Raspberry Pi (Offline)</div>
+              </div>
+
+              <div class="setting-row">
+                <div class="setting-label">Technology</div>
+                <div style="font-size:0.85rem;color:var(--text-sub);">HTML · CSS · JavaScript</div>
+              </div>
+
+              <div class="setting-row">
+                <div class="setting-label">Internet Required</div>
+                <div style="font-size:0.85rem;color:#059669;font-weight:700;"><i class="fa-solid fa-wifi-slash"></i> No – Fully Offline</div>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h3><i class="fa-solid fa-trash-can"></i> Data Management</h3>
+              <p style="font-size:0.84rem;color:var(--text-sub);margin-bottom:14px;">All data lives in <code></head></code> or in your front-end arrays.</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn-danger" onclick="if(confirm('Reset all progress?')) alert('Progress reset!')">
+                  <i class="fa-solid fa-rotate-left"></i> Reset Progress
+                </button>
+                <button class="btn-danger" onclick="window.location.href='index.html'">
+                  <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="save-toast" id="saveToast">
+    <i class="fa-solid fa-circle-check"></i> Settings saved!
+  </div>
+
+  <!-- Hidden file inputs for chapter uploads -->
+  <input type="file" id="upload-video-input" style="display:none" accept="video/*" onchange="handleFileUpload(event,'video')">
+<input type="file" id="upload-notes-input" style="display:none" accept=".pdf,.ppt,.pptx,.doc,.docx" onchange="handleFileUpload(event,'notes')">
+<input type="file" id="upload-paper-input" style="display:none" accept=".pdf,.doc,.docx" onchange="handlePaperUpload(event)">
+
+<script>
+var S = window.SLStore;
+
+var TEACHER = {
+  name: "Teacher",
+  classInfo: ""
+};
+var STUDENTS = appData.students;
+var SUBJECTS = [
+  {id:"math",     name:"Mathematics",      icon:"➕", cls:"math"    },
+  {id:"science",  name:"Science",          icon:"🔬", cls:"science" },
+  {id:"english",  name:"English",          icon:"📖", cls:"english" },
+  {id:"social",   name:"Social Studies",   icon:"🌍", cls:"social"  },
+  {id:"computer", name:"Computer Science", icon:"💻", cls:"computer"}
+];
+var CHAPTERS_MAP = {
+  math:     ["Ch 1: Algebra","Ch 2: Geometry","Ch 3: Trigonometry"],
+  science:  ["Ch 1: Motion","Ch 2: Force & Laws","Ch 3: Light"],
+  english:  ["Ch 1: Grammar","Ch 2: Prose","Ch 3: Poetry"],
+  social:   ["Ch 1: History","Ch 2: Geography","Ch 3: Civics"],
+  computer: ["Ch 1: Basics","Ch 2: Programming","Ch 3: Networking"]
+};
+var DEMO_RESULTS = [];
+var currentSubjId  = null;
+var currentPaperId = null;
+var pendingChId    = null;
+var pendingUpType  = null;
+var QB = { subjId:null, chId:null, chTitle:'', qIdx:0 };
+
+async function loadDashboardStats(students, results){
+  document.getElementById('stat-students').textContent = students.length || 0;
+
+  let totalChapters = 0;
+  let totalQuizzes = 0;
+  try{
+    const subjRes = await fetch('/api/subjects');
+    const subjects = await subjRes.json();
+    for(const subj of subjects){
+      const chRes = await fetch('/api/subjects/' + subj.slug + '/chapters');
+      const chs = await chRes.json();
+      if(Array.isArray(chs)){
+        totalChapters += chs.length;
+        chs.forEach(function(ch){ totalQuizzes += (ch.quizzes||[]).length; });
+      }
+    }
+  } catch(e){}
+
+  document.getElementById('stat-chapters').textContent = totalChapters;
+  document.getElementById('stat-quizzes').textContent = totalQuizzes;
+
+  if(results && results.length){
+    var totalMarks = results.reduce(function(sum,r){ return sum+(r.marks||0); }, 0);
+    var totalPoss  = results.reduce(function(sum,r){ return sum+(r.total||0); }, 0);
+    document.getElementById('stat-avg').textContent = totalPoss ? Math.round((totalMarks/totalPoss)*100)+'%' : '0%';
+  } else {
+    document.getElementById('stat-avg').textContent = '0%';
+  }
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────────────────────
+// ── NAVIGATION ───────────────────────────────────────────────────────────────
+function showSection(name){
+  document.querySelectorAll('.t-section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.sidebar-nav .nav-item').forEach(function(a){a.classList.remove('active');});
+  var sec = document.getElementById('sec-'+name);
+  if(!sec){ console.error('Section not found: sec-'+name); return; }
+  sec.classList.add('active');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async function () {
+  const savedTeacher = JSON.parse(localStorage.getItem('teacherProfile') || '{}');
+
+  document.getElementById('teacher-name-display').textContent =
+    savedTeacher.name || TEACHER.name || 'Teacher';
+
+  document.getElementById('teacher-class-display').textContent =
+    (savedTeacher.grade || '') + (savedTeacher.school ? ' | ' + savedTeacher.school : '');
+
+  let students = [];
+  let results = [];
+
+  try {
+    const studentRes = await fetch('/api/students');
+    students = await studentRes.json();
+    if(!Array.isArray(students)) students = [];
+  } catch(e) {
+    students = [];
+  }
+
+  try {
+    const resultRes = await fetch('/api/results');
+    results = await resultRes.json();
+    if(!Array.isArray(results)) results = [];
+  } catch(e) {
+    results = [];
+  }
+  buildStudentDetailTable(students);
+  buildDashboardTable(students, results);
+  loadDashboardStats(students, results);
+  buildSubjectGrid('subjects-grid-container', openSubject);
+  buildSubjectGrid('papers-grid-container', openPapers);
+  renderQuizResults(results);
+});
+// ── STUDENT TABLES ────────────────────────────────────────────────────────────
+function buildStudentDetailTable(students){
+  const tbody = document.getElementById('student-detail-tbody');
+
+  if(!students || !students.length){
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#9ca3af;">No students found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = students.map(function(s, i){
+    return '<tr>'
+      + '<td>' + (i + 1) + '</td>'
+      + '<td style="font-weight:700;">' + (s.name || '—') + '</td>'
+      + '<td>' + (s.roll || '—') + '</td>'
+      + '<td><div class="prog-cell"><div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:0%"></div></div><span class="prog-pct">0%</span></div></td>'
+      + '</tr>';
+  }).join('');
+}
+function buildDashboardTable(students, results){
+  const tbody = document.getElementById('dash-student-tbody');
+
+  if(!students || !students.length){
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#9ca3af;">No students found</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = students.map(function(s, i){
+    // get all results for this student
+    var studentResults = (results||[]).filter(function(r){
+  return String(r.roll) === String(s.roll);
+});
+
+    var lastResult = studentResults[studentResults.length - 1];
+    var pct = 0;
+    if(studentResults.length){
+      var totalMarks = studentResults.reduce(function(sum,r){ return sum + (r.marks||0); }, 0);
+      var totalPoss  = studentResults.reduce(function(sum,r){ return sum + (r.total||0); }, 0);
+      pct = totalPoss ? Math.round((totalMarks/totalPoss)*100) : 0;
+    }
+
+    var lastScore = lastResult ? lastResult.marks+'/'+lastResult.total : '—';
+    var cls = pct>=75?'excellent':pct>=50?'good':pct>0?'average':'poor';
+    var label = studentResults.length ? (pct>=75?'Excellent':pct>=50?'Good':pct>0?'Average':'Needs Help') : 'No Quiz';
+    var badgeCls = studentResults.length ? cls : 'average';
+
+    return '<tr>'
+      + '<td>' + (i+1) + '</td>'
+      + '<td style="font-weight:700;">' + (s.name||'—') + '</td>'
+      + '<td>' + (s.class_div||'—') + '</td>'
+      + '<td><div class="prog-cell"><div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:'+pct+'%"></div></div><span class="prog-pct">'+pct+'%</span></div></td>'
+      + '<td>' + lastScore + '</td>'
+       + '<td><span class="perf-badge '+badgeCls+'">' + label + '</span></td>'
+      + '<td><button class="btn-del" onclick="deleteStudent('+s.id+')"><i class="fa-solid fa-trash"></i></button></td>'
+      + '</tr>';
+  }).join('');
+}
+async function deleteStudent(studentId){
+  if(!confirm('Delete this student and all their quiz results?')) return;
+  const res = await fetch('/api/students/' + studentId, { method: 'DELETE' });
+  const data = await res.json();
+  if(!data.success){ alert(data.message || 'Delete failed'); return; }
+
+  const studentRes = await fetch('/api/students');
+  const students = await studentRes.json();
+  const resultRes = await fetch('/api/results');
+  const results = await resultRes.json();
+  buildDashboardTable(students, results);
+  buildStudentDetailTable(students);
+}
+// ── SUBJECT GRID ──────────────────────────────────────────────────────────────
+function buildSubjectGrid(containerId, clickFn){
+  var h='';
+  SUBJECTS.forEach(function(s){
+    var cc=(S.chapters[s.id]||[]).length;
+    var pc=(S.papers[s.id]||[]).length;
+    h+='<div class="t-subject-card '+s.cls+'" onclick="'+clickFn.name+'(\''+s.id+'\',\''+s.name.replace(/'/g,"\\'")+'\')">'+
+   '<div class="ts-icon">'+s.icon+'</div>'+
+   '<div class="ts-name">'+s.name+'</div>'+
+   '</div>';
+  });
+  document.getElementById(containerId).innerHTML=h;
+}
+
+function switchSubjTab(panelId,btn){
+  document.querySelectorAll('.subj-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.subj-tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById(panelId).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── SUBJECTS / CHAPTERS ───────────────────────────────────────────────────────
+async function openSubject(id,name){
+  currentSubjId=id;
+  document.getElementById('subj-grid-view').style.display='none';
+  document.getElementById('subj-detail-view').classList.add('active');
+  document.getElementById('subj-detail-title').textContent=name;
+  document.getElementById('chapter-name-input').value='';
+  await renderChapters();
+}
+function backToSubjGrid(){
+  currentSubjId=null;
+  document.getElementById('subj-grid-view').style.display='';
+  document.getElementById('subj-detail-view').classList.remove('active');
+  buildSubjectGrid('subjects-grid-container',openSubject);
+}
+async function addChapter(){
+  if(!currentSubjId) return;
+  var inp = document.getElementById('chapter-name-input');
+  var title = inp.value.trim();
+  if(!title){ alert('Enter a chapter name.'); return; }
+
+  const res = await fetch('/api/chapters', {
+    method: 'POST',
+    body: new URLSearchParams({ title: title, subject: currentSubjId })
+  });
+  const data = await res.json();
+  if(!data.success){ alert(data.message || 'Failed to add chapter'); return; }
+
+  inp.value='';
+  await renderChapters();
+}
+async function renderChapters(){
+  if(!currentSubjId) return;
+
+  const res = await fetch('/api/subjects/' + currentSubjId + '/chapters');
+  const list = await res.json();
+
+  var acc=document.getElementById('chapter-accordion');
+  if(!list.length){
+    acc.innerHTML='<div class="empty-box">No chapters yet. Create one above.</div>';
+    return;
+  }
+
+  var h='';
+  list.forEach(function(ch,i){
+    var qlen=(ch.quizzes||[]).length;
+    h+='<div class="chapter-card">'+
+       '<div class="chapter-head" onclick="toggleChBody(\''+ch.id+'\')">'+
+         '<div class="chapter-left">'+
+           '<div class="chapter-badge">'+(i+1)+'</div>'+
+           '<div class="chapter-text">'+
+             '<div class="chapter-title">'+ch.title+'</div>'+
+             '<div class="chapter-subtitle">'+((ch.files&&ch.files.length)?ch.files.length:0)+' file(s) · '+qlen+' quiz(zes)</div>'+
+           '</div>'+
+         '</div>'+
+         '<div class="chapter-right">'+
+           '<button class="btn-delete-chapter" onclick="event.stopPropagation();deleteChapter('+ch.id+')"><i class="fa-solid fa-trash"></i></button>'+
+           '<i class="fa-solid fa-chevron-down"></i>'+
+         '</div>'+
+       '</div>'+
+       '<div class="chapter-body" id="chbody-'+ch.id+'">'+
+         '<div class="chapter-upload-row">'+
+           '<button class="btn-outline-green" onclick="triggerUpload(\''+ch.id+'\',\'video\')"><i class="fa-solid fa-video"></i> Upload Lecture</button>'+
+           '<button class="btn-outline-orange" onclick="triggerUpload(\''+ch.id+'\',\'notes\')"><i class="fa-solid fa-file-lines"></i> Upload Notes</button>'+
+           '<button class="btn-outline-purple" onclick="openQuizBuilder(\''+currentSubjId+'\',\''+ch.id+'\',\''+ch.title.replace(/'/g,"\\'")+'\')"><i class="fa-solid fa-circle-question"></i> Create Quiz</button>'+
+         '</div>';
+
+    if(!ch.files || !ch.files.length){
+      h+='<p style="font-size:0.82rem;color:var(--text-sub);margin-bottom:10px;">No files uploaded yet.</p>';
+    } else {
+      h+='<div class="chapter-files">';
+      ch.files.forEach(function(f){
+        var icon=f.type==='video'?'fa-video':'fa-file-lines';
+        h+='<div class="chapter-file-item">'+
+             '<div class="chapter-file-icon"><i class="fa-solid '+icon+'"></i></div>'+
+             '<div class="chapter-file-info"><strong>'+f.name+'</strong><span></span></div>'+
+             '<div class="chapter-file-actions">'+
+               '<button class="btn-view" onclick="window.open(\''+f.url+'\',\'_blank\')"><i class="fa-solid fa-eye"></i> View</button>'+
+               '<button class="btn-del" onclick="deleteFile(\''+f.id+'\')"><i class="fa-solid fa-trash"></i></button>'+
+             '</div>'+
+           '</div>';
+      });
+      h+='</div>';
+    }
+
+    if(qlen){
+      h+='<div style="margin-top:12px;"><p style="font-size:0.76rem;font-weight:800;color:var(--text-sub);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Quizzes</p>';
+      ch.quizzes.forEach(function(qz){
+        h+='<div style="background:#f3f4f6;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:7px;">'+
+             '<i class="fa-solid fa-circle-question" style="color:#7c3aed;font-size:1.1rem;flex-shrink:0;"></i>'+
+             '<div style="flex:1;"><strong style="font-size:0.86rem;">'+qz.title+'</strong>'+
+             '<span style="font-size:0.74rem;color:var(--text-sub);display:block;">'+qz.questions.length+' questions</span></div>'+
+             '<button class="btn-del" onclick="deleteQuiz(\''+qz.id+'\')"><i class="fa-solid fa-trash"></i></button>'+
+           '</div>';
+      });
+      h+='</div>';
+    }
+
+    h+='</div></div>';
+  });
+
+  acc.innerHTML=h;
+}
+function toggleChBody(id){
+  var b=document.getElementById('chbody-'+id);
+  if(b) b.classList.toggle('open');
+}
+async function deleteChapter(chId){
+  if(!confirm('Delete this chapter and all its files/quizzes?')) return;
+  const r = await fetch('/api/chapters/'+chId, {method:'DELETE'});
+  const j = await r.json();
+  if(j && !j.success) return alert(j.message || 'Delete failed');
+  await renderChapters();
+}
+function triggerUpload(chId,type){
+  pendingChId=chId;
+  pendingUpType=type;
+  // Use the static hidden inputs that exist in HTML
+  document.getElementById(type==='video'?'upload-video-input':'upload-notes-input').click();
+}
+async function handleFileUpload(event, type){
+  var file = event.target.files[0];
+  if(!file || !currentSubjId || !pendingChId) return;
+
+  var form = new FormData();
+  form.append('chapter_id', pendingChId);
+  form.append('file_type', type);
+  form.append('file', file);
+
+  const res = await fetch('/api/upload', { method:'POST', body: form });
+  const data = await res.json();
+  if(!data.success){ alert(data.message); return; }
+
+  renderChapters();
+  event.target.value='';
+}
+function viewFile(name){ alert('File: '+name+'\n\nPlace your actual files in a /files/ folder on the Pi server to make View work.'); }
+async function deleteFile(fileId){
+  if(!confirm('Delete this file?')) return;
+  await fetch('/api/files/'+fileId, { method:'DELETE' });
+  renderChapters();
+}
+async function deleteQuiz(quizId){
+  if(!confirm('Delete this quiz?')) return;
+  await fetch('/api/quizzes/'+quizId, { method:'DELETE' });
+  renderChapters();
+}
+// ── PAPERS ────────────────────────────────────────────────────────────────────
+function openPapers(id,name){
+  currentPaperId=id;
+  document.getElementById('papers-grid-view').style.display='none';
+  document.getElementById('papers-detail-view').classList.add('active');
+  document.getElementById('papers-detail-title').textContent=name;
+  renderPapers();
+}
+function backToPapersGrid(){
+  currentPaperId=null;
+  document.getElementById('papers-grid-view').style.display='';
+  document.getElementById('papers-detail-view').classList.remove('active');
+  buildSubjectGrid('papers-grid-container',openPapers);
+}
+function triggerPaperUpload(){
+  document.getElementById('upload-paper-input').click();
+}
+async function handlePaperUpload(event){
+  var file = event.target.files[0];
+  if(!file || !currentPaperId) return;
+
+  var form = new FormData();
+  form.append('subject', currentPaperId);
+  form.append('title', file.name);
+  form.append('file', file);
+
+  const res = await fetch('/api/papers', { method:'POST', body: form });
+  const data = await res.json();
+  if(!data.success){ alert(data.message); return; }
+
+  renderPapers();
+  event.target.value='';
+}
+async function renderPapers(){
+  const res = await fetch('/api/papers?subject=' + currentPaperId);
+  const list = await res.json();
+
+  var ul = document.getElementById('papers-uploaded-list');
+  if(!list.length){
+    ul.innerHTML = '<div class="empty-box">No question papers uploaded yet.</div>';
+    return;
+  }
+  var h = '';
+  list.forEach(function(p){
+    h += '<div class="uploaded-item">'+
+           '<div class="uploaded-icon"><i class="fa-solid fa-file-lines"></i></div>'+
+           '<div class="uploaded-info"><strong>'+p.title+'</strong></div>'+
+           '<div class="item-actions">'+
+             '<button class="btn-view" onclick="window.open(\''+p.url+'\',\'_blank\')"><i class="fa-solid fa-eye"></i> View</button>'+
+             '<button class="btn-del" onclick="deletePaper('+p.id+')"><i class="fa-solid fa-trash"></i></button>'+
+           '</div>'+
+         '</div>';
+  });
+  ul.innerHTML = h;
+}
+async function deletePaper(paperId){
+  if(!confirm('Delete this paper?')) return;
+  await fetch('/api/papers/'+paperId, { method:'DELETE' });
+  renderPapers();
+}
+
+// ── QUIZ RESULTS ──────────────────────────────────────────────────────────────
+function renderQuizResults(results){
+  const tbody = document.getElementById('quiz-result-tbody');
+
+  if(!results || !results.length){
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#9ca3af;">No quiz results yet</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = results.map(function(r, i){
+    const pct = r.total ? Math.round((r.marks / r.total) * 100) : 0;
+    const cls = pct >= 75 ? 'excellent' : pct >= 50 ? 'good' : pct > 0 ? 'average' : 'poor';
+    const label = pct >= 75 ? 'Excellent' : pct >= 50 ? 'Good' : pct > 0 ? 'Average' : 'Needs Help';
+
+    return '<tr>'
+      + '<td>' + (i + 1) + '</td>'
+      + '<td style="font-weight:700;">' + (r.student || '—') + '</td>'
+      + '<td>' + (r.roll || '—') + '</td>'
+      + '<td>' + (r.subject || '—') + '</td>'
+      + '<td>' + (r.chapter_title || '—') + '</td>'
+      + '<td>' + (r.quiz_title || '—') + '</td>'
+      + '<td><strong>' + r.marks + '/' + r.total + '</strong></td>'
+      + '<td><span class="perf-badge ' + cls + '">' + label + '</span></td>'
+      + '</tr>';
+  }).join('');
+}
+async function updateChapterFilter(){
+  var subj=document.getElementById('filter-subject').value;
+  var sel=document.getElementById('filter-chapter');
+  sel.innerHTML='<option value="">All Chapters</option>';
+  if(!subj) return;
+  var slugMap={'Mathematics':'math','Science':'science','English':'english','Social Studies':'social','Computer Science':'computer'};
+  var slug=slugMap[subj];
+  if(!slug) return;
+  try{
+    const res=await fetch('/api/subjects/'+slug+'/chapters');
+    const chs=await res.json();
+    if(Array.isArray(chs)){
+      chs.forEach(function(ch){
+        sel.innerHTML+='<option value="'+ch.title+'">'+ch.title+'</option>';
+      });
+    }
+  }catch(e){}
+}
+async function applyQuizFilter(){
+  var subj=document.getElementById('filter-subject').value;
+  var chap=document.getElementById('filter-chapter').value;
+  let all=[];
+  try{
+    const res=await fetch('/api/results'+(subj?'?subject='+encodeURIComponent(subj):''));
+    all=await res.json();
+    if(!Array.isArray(all)) all=[];
+  }catch(e){ all=[]; }
+  renderQuizResults(all.filter(function(r){
+    return (!chap||r.chapter_title===chap);
+  }));
+}
+
+async function resetQuizFilter(){
+  document.getElementById('filter-subject').value='';
+  document.getElementById('filter-chapter').innerHTML='<option value="">All Chapters</option>';
+  let all=[];
+  try{
+    const res=await fetch('/api/results');
+    all=await res.json();
+    if(!Array.isArray(all)) all=[];
+  }catch(e){ all=[]; }
+  renderQuizResults(all);
+}
+// ── QUIZ BUILDER ──────────────────────────────────────────────────────────────
+function openQuizBuilder(subjId,chId,chTitle){
+  QB.subjId=subjId; QB.chId=chId; QB.chTitle=chTitle; QB.qIdx=0;
+  document.getElementById('qb-title').value='';
+  document.getElementById('qb-for').textContent='Subject: '+SUBJECTS.find(function(s){return s.id===subjId;}).name+' › '+chTitle;
+  document.getElementById('qb-questions-wrap').innerHTML='';
+  document.getElementById('quizBuilderModal').style.display='flex';
+  addQuestion();
+}
+function closeQuizBuilder(){
+  document.getElementById('quizBuilderModal').style.display='none';
+}
+function addQuestion(){
+  QB.qIdx++;
+  var n=QB.qIdx;
+  var wrap=document.getElementById('qb-questions-wrap');
+  var div=document.createElement('div');
+  div.className='qb-q-block'; div.id='qblock-'+n;
+  div.innerHTML=
+    '<div class="qb-q-header">'+
+      '<span class="qb-q-num">Q'+n+'</span>'+
+      '<button class="btn-del" onclick="removeQuestion('+n+')" style="padding:4px 10px;font-size:0.74rem;"><i class="fa-solid fa-xmark"></i> Remove</button>'+
+    '</div>'+
+    '<input type="text" class="qb-q-input" id="qtext-'+n+'" placeholder="Type your question here…"/>'+
+    '<div class="qb-opts-grid">'+
+      ['A','B','C','D'].map(function(lbl,i){
+        return '<div class="qb-opt-row">'+
+          '<label class="qb-opt-radio"><input type="radio" name="correct-'+n+'" value="'+i+'"> ✅ Correct</label>'+
+          '<input type="text" class="qb-opt-input" id="opt-'+n+'-'+i+'" placeholder="Option '+lbl+'"/>'+
+        '</div>';
+      }).join('')+
+    '</div>'+
+    '<p class="qb-hint">☝️ Click the radio button next to the correct answer option.</p>';
+  wrap.appendChild(div);
+}
+function removeQuestion(n){
+  var el=document.getElementById('qblock-'+n);
+  if(el) el.remove();
+}
+async function saveQuiz(){
+  var title = document.getElementById('qb-title').value.trim();
+  if(!title){ alert('Enter a quiz title.'); return; }
+
+  var blocks = document.querySelectorAll('.qb-q-block');
+  if(!blocks.length){ alert('Add at least one question.'); return; }
+
+  var questions = [];
+  var valid = true;
+  blocks.forEach(function(block){
+    var n = block.id.replace('qblock-','');
+    var qText = document.getElementById('qtext-'+n).value.trim();
+    var opts = [0,1,2,3].map(function(i){ return document.getElementById('opt-'+n+'-'+i).value.trim(); });
+    var correctEl = block.querySelector('input[name="correct-'+n+'"]:checked');
+    if(!qText || opts.some(function(o){return !o;}) || !correctEl){ valid=false; return; }
+    questions.push({ q: qText, options: opts, correct: parseInt(correctEl.value) });
+  });
+
+  if(!valid){ alert('Fill ALL fields and select correct answer for every question.'); return; }
+
+  const res = await fetch('/api/quizzes', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chapter_id: QB.chId, title: title, questions: questions })
+  });
+  const data = await res.json();
+  if(!data.success){ alert(data.message); return; }
+
+  closeQuizBuilder();
+  renderChapters();
+  showToast();
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
+function showSettingsPanel(name,btn){
+  document.querySelectorAll('.settings-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.settings-nav-item').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('panel-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+function saveProfile(){
+  var name=document.getElementById('profileName').value.trim();
+  if(name){
+    document.getElementById('displayName').textContent=name;
+    document.getElementById('bigAvatar').textContent=name.charAt(0).toUpperCase();
+    document.getElementById('teacher-name-display').textContent=name;
+  }
+  showToast();
+}
+function applyTheme(pm,pmd,sb,dot){
+  document.documentElement.style.setProperty('--purple-mid',pm);
+  document.documentElement.style.setProperty('--purple-dark',pmd);
+  document.documentElement.style.setProperty('--sidebar-bg',sb);
+  document.querySelectorAll('.theme-dot').forEach(function(d){d.classList.remove('selected');});
+  dot.classList.add('selected');
+}
+function toggleDarkMode(cb){
+  document.body.setAttribute('data-theme',cb.checked?'dark':'light');
+}
+function showToast(){
+  var t=document.getElementById('saveToast');
+  t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2500);
+}
+</script>
+<!-- These MUST exist as static HTML, not created by JS -->
+<input type="file" id="upload-video-input" style="display:none" accept="video/*"
+  onchange="handleFileUpload(event,'video')">
+<input type="file" id="upload-notes-input" style="display:none" accept=".pdf,.ppt,.pptx,.doc,.docx,.txt"
+  onchange="handleFileUpload(event,'notes')">
+<input type="file" id="upload-paper-input" style="display:none" accept=".pdf,.doc,.docx"
+  onchange="handlePaperUpload(event)">
+</body>
+</html>

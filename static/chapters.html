@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Learn Hub — Chapters</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .chapter-item{background:#fff;border-radius:16px;padding:18px 20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(0,0,0,0.07);border:1px solid #f0f0f0;}
+    .ch-left{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+    .ch-num{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.9rem;flex-shrink:0;}
+    .ch-info h4{font-size:0.95rem;font-weight:800;color:#1f2937;margin:0 0 4px;}
+    .ch-info span{font-size:0.78rem;color:#6b7280;}
+    .ch-action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+    .ch-action-box{flex:1;min-width:90px;border-radius:12px;padding:12px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;border:none;font-weight:700;font-size:0.82rem;transition:transform 0.15s,box-shadow 0.15s;}
+    .ch-action-box:hover:not([disabled]){transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,0.12);}
+    .ch-action-box:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none;}
+    .ch-action-box .box-icon{font-size:1.4rem;}
+    .ch-action-box .box-count{font-size:0.7rem;font-weight:600;opacity:0.75;}
+    .ch-action-box.video{background:#dbeafe;color:#1d4ed8;}
+    .ch-action-box.notes{background:#d1fae5;color:#065f46;}
+    .ch-action-box.quiz{background:#ede9fe;color:#5b21b6;}
+    .file-list-wrap{display:none;margin-top:10px;padding:10px 14px;background:#f9fafb;border-radius:10px;border:1px solid #f0f0f0;}
+    .file-list-wrap.open{display:block;}
+    .file-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;font-size:0.76rem;font-weight:700;cursor:pointer;margin:4px 4px 0 0;}
+    .file-chip.video{background:#dbeafe;color:#1d4ed8;}
+    .file-chip.notes{background:#d1fae5;color:#065f46;}
+    .empty-state{text-align:center;padding:48px 20px;color:#9ca3af;}
+    .empty-state p:first-child{font-size:2.5rem;margin-bottom:10px;}
+    .empty-state p:last-child{font-size:0.9rem;}
+    .quiz-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+    .quiz-modal.open{display:flex;}
+    .quiz-box{background:#fff;border-radius:20px;width:100%;max-width:540px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+    .quiz-header{background:linear-gradient(90deg,#7c3aed,#6366f1);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;}
+    .quiz-header span{color:#fff;font-weight:800;font-size:1rem;}
+    .quiz-header button{background:rgba(255,255,255,0.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;}
+    .quiz-body{padding:24px;}
+    .quiz-counter{font-size:0.78rem;color:#6b7280;font-weight:700;margin-bottom:10px;}
+    .quiz-question{font-size:1.05rem;font-weight:700;color:#1f2937;margin-bottom:20px;line-height:1.5;}
+    .quiz-options{display:flex;flex-direction:column;gap:10px;}
+    .quiz-opt{width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;background:#fff;font-size:0.92rem;font-weight:600;cursor:pointer;text-align:left;transition:all 0.15s;}
+    .quiz-opt:hover:not([disabled]){border-color:#7c3aed;background:#f5f3ff;}
+    .quiz-feedback{margin-top:14px;min-height:24px;font-size:0.92rem;font-weight:700;}
+    .quiz-next{display:none;margin-top:14px;background:linear-gradient(90deg,#7c3aed,#6366f1);color:#fff;border:none;padding:10px 26px;border-radius:10px;font-weight:800;cursor:pointer;font-size:0.9rem;}
+    .quiz-result{text-align:center;padding:30px 20px;}
+    .quiz-result .emoji{font-size:3.5rem;margin-bottom:10px;}
+    .quiz-result h2{font-size:1.3rem;font-weight:900;color:#1f2937;margin-bottom:6px;}
+    .quiz-result .score{font-size:1.1rem;color:#7c3aed;font-weight:800;margin-bottom:4px;}
+    .quiz-result .pct{font-size:1.5rem;font-weight:900;color:#1f2937;}
+    .quiz-result .done-btn{margin-top:20px;background:linear-gradient(90deg,#7c3aed,#6366f1);color:#fff;border:none;padding:12px 32px;border-radius:10px;font-weight:800;cursor:pointer;font-size:1rem;}
+    .quiz-list-wrap{display:none;margin-top:10px;padding:10px 14px;background:#f5f3ff;border-radius:10px;border:1px solid #ede9fe;}
+    .quiz-list-wrap.open{display:block;}
+    .quiz-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:99px;font-size:0.78rem;font-weight:700;cursor:pointer;margin:4px 4px 0 0;background:#ede9fe;color:#5b21b6;border:none;}
+    .quiz-chip:hover{background:#ddd6fe;}
+  </style>
+</head>
+<body>
+
+  <div class="blob-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <nav class="topnav">
+    <div class="nav-brand" onclick="window.location.href='student.html'">
+      <div class="nav-logo">SL</div>
+      <div class="nav-title">Smart Learn Hub</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar" id="nav-avatar">S</div>
+        <span id="nav-name">Student</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-inner">
+      <button class="back-btn" onclick="window.location.href='student.html'">← Back to Subjects</button>
+      <div class="chapter-header">
+        <h2 id="subject-title">📚 Subject</h2>
+        <p>Select a chapter to start learning</p>
+      </div>
+      <div class="chapters-list" id="chapters-list"></div>
+    </div>
+  </div>
+
+  <!-- Quiz Modal -->
+  <div class="quiz-modal" id="quiz-modal">
+    <div class="quiz-box">
+      <div class="quiz-header">
+        <span id="qm-title">Quiz</span>
+        <button onclick="closeQuizModal()">✕</button>
+      </div>
+      <div class="quiz-body" id="qm-body">
+        <div class="quiz-counter"  id="qm-counter"></div>
+        <div class="quiz-question" id="qm-question"></div>
+        <div class="quiz-options"  id="qm-options"></div>
+        <div class="quiz-feedback" id="qm-feedback"></div>
+        <button class="quiz-next"  id="qm-next" onclick="nextQuizQ()">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var SUBJ_ID_MAP = {
+      'Mathematics':'math','Science':'science',
+      'English':'english','Social Studies':'social','Computer Science':'computer'
+    };
+    var icons = {
+      'Mathematics':'➕','Science':'🔬',
+      'English':'📝','Social Studies':'🌍','Computer Science':'💻'
+    };
+
+    var QM = { quiz:null, current:0, score:0, answered:false };
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // BOOT
+    // ─────────────────────────────────────────────────────────────────────────
+    window.onload = async function () {
+      var role = sessionStorage.getItem('sl_role');
+      if (role !== 'student') { window.location.href = 'index.html'; return; }
+
+      var name    = sessionStorage.getItem('sl_name')    || 'Student';
+      var subject = sessionStorage.getItem('sl_subject') || 'Mathematics';
+      var subjId  = SUBJ_ID_MAP[subject] || 'math';
+
+      document.getElementById('nav-avatar').textContent = name[0].toUpperCase();
+      document.getElementById('nav-name').textContent   = name;
+      document.getElementById('subject-title').textContent = (icons[subject] || '📚') + ' ' + subject;
+
+      var list = document.getElementById('chapters-list');
+
+      try {
+        var res      = await fetch('/api/subjects/' + subjId + '/chapters');
+        var chapters = await res.json();
+
+        if (!chapters.length) {
+          list.innerHTML = '<div class="empty-state"><p>📭</p><p>No chapters yet.<br>Check back after your teacher adds content.</p></div>';
+          return;
+        }
+
+        var html = '';
+        chapters.forEach(function (ch, i) {
+          var videos  = (ch.files  || []).filter(function(f){ return f.type === 'video'; });
+          var notes   = (ch.files  || []).filter(function(f){ return f.type === 'notes'; });
+          var quizzes = ch.quizzes || [];
+
+          html += '<div class="chapter-item">';
+          html += '<div class="ch-left">';
+          html += '<div class="ch-num">' + (i + 1) + '</div>';
+          html += '<div class="ch-info"><h4>' + ch.title + '</h4>';
+          html += '<span>' + videos.length + ' video(s) · ' + notes.length + ' note(s) · ' + quizzes.length + ' quiz(zes)</span></div></div>';
+
+          html += '<div class="ch-action-row">';
+
+          // Video button
+          html += '<button class="ch-action-box video"' + (videos.length === 0 ? ' disabled' : '') +
+                  ' onclick="toggleSection(\'video-' + i + '\',\'notes-' + i + '\',\'quiz-' + i + '\')">';
+          html += '<span class="box-icon">▶</span><span>Videos</span>';
+          html += '<span class="box-count">' + videos.length + ' file' + (videos.length !== 1 ? 's' : '') + '</span></button>';
+
+          // Notes button
+          html += '<button class="ch-action-box notes"' + (notes.length === 0 ? ' disabled' : '') +
+                  ' onclick="toggleSection(\'notes-' + i + '\',\'video-' + i + '\',\'quiz-' + i + '\')">';
+          html += '<span class="box-icon">📄</span><span>Notes</span>';
+          html += '<span class="box-count">' + notes.length + ' file' + (notes.length !== 1 ? 's' : '') + '</span></button>';
+
+          // Quiz button
+          html += '<button class="ch-action-box quiz"' + (quizzes.length === 0 ? ' disabled' : '') +
+                  ' onclick="toggleSection(\'quiz-' + i + '\',\'video-' + i + '\',\'notes-' + i + '\')">';
+          html += '<span class="box-icon">📝</span><span>Quiz</span>';
+          html += '<span class="box-count">' + quizzes.length + ' quiz' + (quizzes.length !== 1 ? 'zes' : '') + '</span></button>';
+
+          html += '</div>'; // ch-action-row
+
+          // Video chips
+          html += '<div class="file-list-wrap" id="video-' + i + '">';
+          videos.forEach(function (f) {
+            var safeUrl   = encodeURIComponent(f.url);
+            var safeTitle = encodeURIComponent(ch.title);
+            var safeName  = encodeURIComponent(f.name);
+            html += '<span class="file-chip video" onclick="openVideo(\'' + safeUrl + '\',\'' + safeTitle + '\',\'' + safeName + '\')">▶ ' + f.name + '</span>';
+          });
+          html += '</div>';
+
+          // Notes chips
+          html += '<div class="file-list-wrap" id="notes-' + i + '">';
+          notes.forEach(function (f) {
+            var safeUrl   = encodeURIComponent(f.url);
+            var safeTitle = encodeURIComponent(ch.title);
+            var safeName  = encodeURIComponent(f.name);
+            html += '<span class="file-chip notes" onclick="openNotes(\'' + safeUrl + '\',\'' + safeTitle + '\',\'' + safeName + '\')">📄 ' + f.name + '</span>';
+          });
+          html += '</div>';
+
+          // Quiz chips
+          html += '<div class="quiz-list-wrap" id="quiz-' + i + '">';
+          quizzes.forEach(function (qz) {
+            var encoded = encodeURIComponent(JSON.stringify(qz));
+            html += '<button class="quiz-chip" onclick="startQuiz(\'' + encoded + '\')">📝 ' + qz.title + '</button>';
+          });
+          html += '</div>';
+
+          html += '</div>'; // chapter-item
+        });
+
+        list.innerHTML = html;
+
+      } catch (err) {
+        console.error(err);
+        list.innerHTML = '<div class="empty-state"><p>⚠️</p><p>Could not load chapters. Please try again.</p></div>';
+      }
+    };
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // NAVIGATION
+    // ─────────────────────────────────────────────────────────────────────────
+    function openVideo(safeUrl, safeTitle, safeName) {
+      sessionStorage.setItem('currentVideo', JSON.stringify({
+        fileUrl:      decodeURIComponent(safeUrl),
+        chapterTitle: decodeURIComponent(safeTitle),
+        fileName:     decodeURIComponent(safeName)
+      }));
+      window.location.href = 'learn.html';
+    }
+
+    function openNotes(safeUrl, safeTitle, safeName) {
+      sessionStorage.setItem('currentNotes', JSON.stringify({
+        fileUrl:      decodeURIComponent(safeUrl),
+        chapterTitle: decodeURIComponent(safeTitle),
+        fileName:     decodeURIComponent(safeName)
+      }));
+      window.location.href = 'notes.html';
+    }
+
+    function toggleSection(openId, closeId1, closeId2) {
+      var target = document.getElementById(openId);
+      var c1     = document.getElementById(closeId1);
+      var c2     = document.getElementById(closeId2);
+      if (c1) c1.classList.remove('open');
+      if (c2) c2.classList.remove('open');
+      if (target) target.classList.toggle('open');
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // QUIZ ENGINE
+    // ─────────────────────────────────────────────────────────────────────────
+    function startQuiz(encoded) {
+      QM.quiz    = JSON.parse(decodeURIComponent(encoded));
+      QM.current = 0;
+      QM.score   = 0;
+      document.getElementById('quiz-modal').classList.add('open');
+      renderQuizQ();
+    }
+
+    function renderQuizQ() {
+      var q   = QM.quiz.questions[QM.current];
+      var tot = QM.quiz.questions.length;
+      document.getElementById('qm-title').textContent    = QM.quiz.title;
+      document.getElementById('qm-counter').textContent  = 'Question ' + (QM.current + 1) + ' of ' + tot;
+      document.getElementById('qm-question').textContent = q.q;
+      document.getElementById('qm-feedback').innerHTML   = '';
+      document.getElementById('qm-next').style.display   = 'none';
+      QM.answered = false;
+
+      var optsHtml = '';
+      q.options.forEach(function (opt, i) {
+        optsHtml += '<button class="quiz-opt" onclick="answerQuiz(this,' + i + ')">' + opt + '</button>';
+      });
+      document.getElementById('qm-options').innerHTML = optsHtml;
+    }
+
+    function answerQuiz(btn, idx) {
+      if (QM.answered) return;
+      QM.answered = true;
+
+      var q       = QM.quiz.questions[QM.current];
+      var allBtns = document.querySelectorAll('.quiz-opt');
+      allBtns.forEach(function (b) { b.disabled = true; });
+
+      if (idx === q.correct) {
+        btn.style.background  = '#d1fae5';
+        btn.style.borderColor = '#059669';
+        btn.style.color       = '#065f46';
+        document.getElementById('qm-feedback').innerHTML = '<span style="color:#059669;">✅ Correct!</span>';
+        QM.score++;
+      } else {
+        btn.style.background  = '#fee2e2';
+        btn.style.borderColor = '#dc2626';
+        btn.style.color       = '#991b1b';
+        allBtns[q.correct].style.background  = '#d1fae5';
+        allBtns[q.correct].style.borderColor = '#059669';
+        allBtns[q.correct].style.color       = '#065f46';
+        document.getElementById('qm-feedback').innerHTML =
+          '<span style="color:#dc2626;">❌ Wrong! Correct: <u>' + q.options[q.correct] + '</u></span>';
+      }
+      document.getElementById('qm-next').style.display = 'block';
+    }
+
+    function nextQuizQ() {
+      QM.current++;
+
+      if (QM.current >= QM.quiz.questions.length) {
+        // ── Show result screen ─────────────────────────────────────────────
+        var pct   = Math.round((QM.score / QM.quiz.questions.length) * 100);
+        var emoji = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📚';
+        document.getElementById('qm-body').innerHTML =
+          '<div class="quiz-result">' +
+          '<div class="emoji">' + emoji + '</div>' +
+          '<h2>Quiz Complete!</h2>' +
+          '<div class="score">' + QM.score + ' / ' + QM.quiz.questions.length + ' Correct</div>' +
+          '<div class="pct">' + pct + '%</div>' +
+          '<button class="done-btn" onclick="closeQuizModal()">Done ✓</button></div>';
+
+        // ── POST result to backend ─────────────────────────────────────────
+        fetch('/api/results', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            quiz_id:       QM.quiz.id   || null,
+            student:       sessionStorage.getItem('sl_name')    || 'Student',
+            roll:          sessionStorage.getItem('sl_roll')    || '',
+            subject:       sessionStorage.getItem('sl_subject') || '',
+            chapter_title: QM.quiz.title,
+            marks:         QM.score,
+            total:         QM.quiz.questions.length
+          })
+        }).catch(function (e) { console.warn('Result save failed:', e); });
+        // ──────────────────────────────────────────────────────────────────
+
+      } else {
+        renderQuizQ();
+      }
+    }
+
+    function closeQuizModal() {
+      document.getElementById('quiz-modal').classList.remove('open');
+      // Reset modal body for next open
+      document.getElementById('qm-body').innerHTML =
+        '<div class="quiz-counter"  id="qm-counter"></div>' +
+        '<div class="quiz-question" id="qm-question"></div>' +
+        '<div class="quiz-options"  id="qm-options"></div>' +
+        '<div class="quiz-feedback" id="qm-feedback"></div>' +
+        '<button class="quiz-next"  id="qm-next" onclick="nextQuizQ()">Next →</button>';
+    }
+
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

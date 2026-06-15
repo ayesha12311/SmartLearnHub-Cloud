@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartLearn – Settings</title>
+  <link rel="stylesheet" href="sty.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="theme.js"></script> 
+  <style>
+    .settings-grid{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start;}
+    @media(max-width:680px){.settings-grid{grid-template-columns:1fr;}}
+    .settings-nav{background:var(--white);border-radius:var(--radius);padding:8px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:2px;}
+    .settings-nav-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:var(--radius-sm);font-size:0.88rem;font-weight:600;color:var(--text-sub);cursor:pointer;transition:all 0.18s;border:none;background:none;width:100%;text-align:left;}
+    .settings-nav-item i{width:18px;text-align:center;}
+    .settings-nav-item:hover{background:var(--purple-pale);color:var(--purple-mid);}
+    .settings-nav-item.active{background:var(--purple-mid);color:white;}
+    .settings-panel{display:none;flex-direction:column;gap:16px;}
+    .settings-panel.active{display:flex;animation:fadeUp 0.2s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .settings-card{background:var(--white);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);}
+    .settings-card h3{font-family:var(--font-display);font-size:1rem;font-weight:800;color:var(--text-main);margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--gray-100);display:flex;align-items:center;gap:8px;}
+    .settings-card h3 i{color:var(--purple-mid);}
+    .setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-100);}
+    .setting-row:last-child{border-bottom:none;padding-bottom:0;}
+    .setting-label{font-size:0.88rem;font-weight:600;color:var(--text-main);}
+    .setting-sub{font-size:0.76rem;color:var(--text-sub);margin-top:2px;}
+    .toggle{position:relative;width:46px;height:26px;display:inline-block;}
+    .toggle input{opacity:0;width:0;height:0;}
+    .toggle-slider{position:absolute;inset:0;background:var(--gray-200);border-radius:26px;cursor:pointer;transition:background 0.2s;}
+    .toggle-slider::before{content:'';position:absolute;width:20px;height:20px;left:3px;top:3px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+    .toggle input:checked+.toggle-slider{background:var(--purple-mid);}
+    .toggle input:checked+.toggle-slider::before{transform:translateX(20px);}
+    .settings-input{width:100%;padding:10px 14px;border:2px solid var(--gray-200);border-radius:var(--radius-sm);font-size:0.9rem;font-family:var(--font-main);outline:none;background:var(--gray-100);transition:border-color 0.2s;color:var(--text-main);}
+    .settings-input:focus{border-color:var(--purple-mid);background:white;box-shadow:0 0 0 3px rgba(124,58,237,0.1);}
+    .field-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+    .field-group label{font-size:0.82rem;font-weight:600;color:var(--text-sub);}
+    .theme-options{display:flex;gap:12px;flex-wrap:wrap;padding-bottom:18px;}
+    .theme-dot{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform 0.18s,border-color 0.18s;position:relative;}
+    .theme-dot:hover{transform:scale(1.15);}
+    .theme-dot.selected{border-color:white;box-shadow:0 0 0 3px var(--purple-mid);}
+    .theme-dot::after{content:attr(title);position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:0.68rem;color:var(--text-sub);white-space:nowrap;font-weight:600;}
+    .slider-row{display:flex;align-items:center;gap:14px;}
+    input[type="range"]{flex:1;accent-color:var(--purple-mid);height:6px;border-radius:10px;cursor:pointer;}
+    .slider-val{min-width:36px;font-size:0.88rem;font-weight:700;color:var(--purple-mid);text-align:right;}
+    .btn-save{background:linear-gradient(90deg,var(--purple-mid),#6366f1);color:white;border:none;padding:11px 28px;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:800;font-size:0.92rem;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 14px rgba(124,58,237,0.3);}
+    .btn-save:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(124,58,237,0.4);}
+    .btn-danger{background:#fee2e2;color:#b91c1c;border:none;padding:10px 20px;border-radius:var(--radius-sm);font-family:var(--font-display);font-weight:700;font-size:0.88rem;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:background 0.18s;}
+    .btn-danger:hover{background:#fecaca;}
+    .save-toast{position:fixed;bottom:28px;right:28px;background:var(--purple-dark);color:white;padding:12px 22px;border-radius:12px;font-size:0.9rem;font-weight:600;display:none;align-items:center;gap:8px;box-shadow:var(--shadow-lg);z-index:999;}
+    .save-toast.show{display:flex;animation:toastIn 0.3s ease;}
+    @keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .profile-avatar-wrap{display:flex;align-items:center;gap:18px;margin-bottom:20px;}
+    .big-avatar{width:70px;height:70px;background:linear-gradient(135deg,var(--purple-mid),#6366f1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;font-weight:900;color:white;font-family:var(--font-display);}
+    .avatar-info h3{font-size:1rem;font-weight:800;}
+    .avatar-info p{font-size:0.82rem;color:var(--text-sub);}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><i class="fa-solid fa-graduation-cap"></i><span>SmartLearnHub</span></div>
+  <nav class="sidebar-nav">
+    <a href="index.html"    class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="students.html" class="nav-item"><i class="fa-solid fa-users"></i><span>Students</span></a>
+    <a href="teacher.html"  class="nav-item"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="notes.html"    class="nav-item"><i class="fa-solid fa-note-sticky"></i><span>Notes</span></a>
+    <a href="quiz.html"     class="nav-item"><i class="fa-solid fa-circle-question"></i><span>Quizzes</span></a>
+    <a href="subjects.html" class="nav-item"><i class="fa-solid fa-book-open"></i><span>Education Content</span></a>
+    <a href="progress.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Progress</span></a>
+    <a href="settings.html" class="nav-item active"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+  </nav>
+  <a href="index.html" class="nav-item logout"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+</aside>
+<main class="main-content">
+  <div class="page-header">
+    <div class="header-left"><div class="header-icon"><i class="fa-solid fa-gear"></i></div><div><h1>Settings</h1><p>Customize your experience</p></div></div>
+  </div>
+  <div class="settings-grid">
+    <div class="settings-nav">
+      <button class="settings-nav-item active" onclick="showPanel('profile',this)"><i class="fa-solid fa-user"></i> Profile</button>
+      <button class="settings-nav-item" onclick="showPanel('appearance',this)"><i class="fa-solid fa-palette"></i> Appearance</button>
+      <button class="settings-nav-item" onclick="showPanel('credentials',this)"><i class="fa-solid fa-lock"></i> Login Credentials</button>
+      <button class="settings-nav-item" onclick="showPanel('notifications',this)"><i class="fa-solid fa-bell"></i> Preferences</button>
+      <button class="settings-nav-item" onclick="showPanel('about',this)"><i class="fa-solid fa-circle-info"></i> About</button>
+    </div>
+    <div>
+      <!-- Profile -->
+      <div class="settings-panel active" id="panel-profile">
+        <div class="settings-card">
+          <h3><i class="fa-solid fa-user"></i> My Profile</h3>
+          <div class="profile-avatar-wrap">
+            <div class="big-avatar" id="bigAvatar">S</div>
+            <div class="avatar-info"><h3 id="displayName">Student User</h3><p id="displayRole">Role: Student</p></div>
+          </div>
+          <div class="field-group"><label>Full Name</label><input class="settings-input" type="text" id="profileName" placeholder="Your full name"/></div>
+          <div class="field-group"><label>Class / Grade</label><input class="settings-input" type="text" id="profileGrade" placeholder="e.g. 10th Grade"/></div>
+          <div class="field-group"><label>School Name</label><input class="settings-input" type="text" id="profileSchool" placeholder="e.g. ABC High School"/></div>
+          <button class="btn-save" onclick="saveProfile()"><i class="fa-solid fa-floppy-disk"></i> Save Profile</button>
+        </div>
+      </div>
+      <!-- Appearance -->
+      <div class="settings-panel" id="panel-appearance">
+        <div class="settings-card">
+          <h3><i class="fa-solid fa-palette"></i> Theme Color</h3>
+          <div class="theme-options">
+            <div class="theme-dot selected" style="background:#7c3aed;" title="Purple" onclick="applyTheme('#7c3aed','#5b1fa0','#4a1086',this)"></div>
+            <div class="theme-dot" style="background:#2563eb;" title="Blue"   onclick="applyTheme('#2563eb','#1d4ed8','#1e3a8a',this)"></div>
+            <div class="theme-dot" style="background:#059669;" title="Green"  onclick="applyTheme('#059669','#047857','#064e3b',this)"></div>
+            <div class="theme-dot" style="background:#dc2626;" title="Red"    onclick="applyTheme('#dc2626','#b91c1c','#7f1d1d',this)"></div>
+            <div class="theme-dot" style="background:#d97706;" title="Orange" onclick="applyTheme('#d97706','#b45309','#78350f',this)"></div>
+            <div class="theme-dot" style="background:#0891b2;" title="Teal"   onclick="applyTheme('#0891b2','#0e7490','#164e63',this)"></div>
+          </div>
+        </div>
+        <div class="settings-card">
+          <h3><i class="fa-solid fa-text-height"></i> Display Options</h3>
+          <div class="setting-row">
+            <div><div class="setting-label">Text Size</div><div class="setting-sub">Adjust for readability</div></div>
+            <div class="slider-row" style="min-width:180px;">
+              <input type="range" min="12" max="20" value="15" id="fontSizeSlider" oninput="document.getElementById('fontSizeVal').textContent=this.value+'px';document.documentElement.style.fontSize=this.value+'px'"/>
+              <span class="slider-val" id="fontSizeVal">15px</span>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">Dark Mode</div><div class="setting-sub">Easy on eyes in low light</div></div>
+            <label class="toggle"><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this)"/><span class="toggle-slider"></span></label>
+          </div>
+          <div class="setting-row">
+            <div><div class="setting-label">Compact View</div><div class="setting-sub">Show more content</div></div>
+            <label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+      </div>
+      <!-- Credentials -->
+      <div class="settings-panel" id="panel-credentials">
+        <div class="settings-card">
+          <h3><i class="fa-solid fa-user-lock"></i> Student Login</h3>
+          <div class="field-group"><label>Username</label><input class="settings-input" type="text" placeholder="student username"/></div>
+          <div class="field-group"><label>Password</label><input class="settings-input" type="password" placeholder="student password"/></div>
+        </div>
+        <div class="settings-card">
+          <h3><i class="fa-solid fa-chalkboard-user"></i> Teacher Login</h3>
+          <div class="field-group"><label>Username</label><input class="settings-input" type="text" placeholder="teacher username"/></div>
+          <div class="field-group"><label>Password</label><input class="settings-input" type="password" placeholder="teacher password"/></div>
+          <p style="font-size:0.78rem;color:var(--text-sub);margin-top:8px;"><i class="fa-solid fa-circle-info"></i> Edit the <code>CREDENTIALS</code> object in <code>login.html</code> to make permanent changes.</p>
+        </div>
+        <button class="btn-save" onclick="showToast()"><i class="fa-solid fa-floppy-disk"></i> Save Credentials</button>
+      </div>
+      <!-- Preferences -->
+      <div class="settings-panel" id="panel-notifications">
+        <div class="settings-card">
+          <h3><i class="fa-solid fa-sliders"></i> Learning Preferences</h3>
+          <div class="setting-row"><div><div class="setting-label">Auto-play next video</div><div class="setting-sub">Auto-play next chapter</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><div class="setting-label">Show progress bar</div><div class="setting-sub">Chapter completion indicator</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><div class="setting-label">Quiz hints</div><div class="setting-sub">Show hints on wrong answer</div></div><label class="toggle"><input type="checkbox"/><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><div class="setting-label">Sound effects</div><div class="setting-sub">Sounds on quiz results</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+          <div class="setting-row"><div><div class="setting-label">Show streak counter</div><div class="setting-sub">Daily learning streak</div></div><label class="toggle"><input type="checkbox" checked/><span class="toggle-slider"></span></label></div>
+        </div>
+        <div class="settings-card">
+          <h3><i class="fa-solid fa-language"></i> Language</h3>
+          <div class="field-group"><label>Interface Language</label>
+            <select class="settings-input"><option>English</option><option>Hindi</option><option>Marathi</option><option>Gujarati</option><option>Tamil</option><option>Telugu</option></select>
+          </div>
+        </div>
+        <button class="btn-save" onclick="showToast()"><i class="fa-solid fa-floppy-disk"></i> Save Preferences</button>
+      </div>
+      <!-- About -->
+      <div class="settings-panel" id="panel-about">
+        <div class="settings-card">
+          <h3><i class="fa-solid fa-circle-info"></i> About SmartLearn</h3>
+          <div style="text-align:center;padding:20px;"><div style="font-size:3rem;margin-bottom:8px;">🎓</div>
+            <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--purple-dark);">SmartLearn</div>
+            <div style="color:var(--text-sub);font-size:0.85rem;margin-top:4px;">Offline Education Platform v1.0.0</div>
+          </div>
+          <div class="setting-row"><div class="setting-label">Platform</div><div style="font-size:0.85rem;color:var(--text-sub);">Raspberry Pi (Offline)</div></div>
+          <div class="setting-row"><div class="setting-label">Technology</div><div style="font-size:0.85rem;color:var(--text-sub);">HTML · CSS · JavaScript</div></div>
+          <div class="setting-row"><div class="setting-label">Internet Required</div><div style="font-size:0.85rem;color:#059669;font-weight:700;"><i class="fa-solid fa-wifi-slash"></i> No – Fully Offline</div></div>
+        </div>
+        <div class="settings-card">
+          <h3><i class="fa-solid fa-trash-can"></i> Data Management</h3>
+          <p style="font-size:0.84rem;color:var(--text-sub);margin-bottom:14px;">All data lives in <code>data.js</code>.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn-danger" onclick="if(confirm('Reset all progress?'))alert('Progress reset!')"><i class="fa-solid fa-rotate-left"></i> Reset Progress</button>
+            <button class="btn-danger" onclick="window.location.href='login.html'"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<div class="save-toast" id="saveToast"><i class="fa-solid fa-circle-check"></i> Settings saved!</div>
+<script src="data.js"></script><script src="script.js"></script>
+<script>
+  function showPanel(name,btn){
+    document.querySelectorAll('.settings-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.settings-nav-item').forEach(b=>b.classList.remove('active'));
+    document.getElementById('panel-'+name).classList.add('active');
+    btn.classList.add('active');
+  }
+  function applyTheme(mid,dark,sidebar,dot){
+    document.documentElement.style.setProperty('--purple-mid',mid);
+    document.documentElement.style.setProperty('--purple-dark',dark);
+    document.documentElement.style.setProperty('--sidebar-bg',sidebar);
+    document.querySelectorAll('.theme-dot').forEach(d=>d.classList.remove('selected'));
+    dot.classList.add('selected');
+    showToast();
+  }
+  function toggleDarkMode(cb){
+    if(cb.checked){
+      document.documentElement.style.setProperty('--white','#1f2937');
+      document.documentElement.style.setProperty('--gray-100','#374151');
+      document.documentElement.style.setProperty('--gray-200','#4b5563');
+      document.documentElement.style.setProperty('--text-main','#f9fafb');
+      document.documentElement.style.setProperty('--text-sub','#9ca3af');
+      document.body.style.background='#111827';
+    } else {
+      document.documentElement.style.setProperty('--white','#ffffff');
+      document.documentElement.style.setProperty('--gray-100','#f3f4f6');
+      document.documentElement.style.setProperty('--gray-200','#e5e7eb');
+      document.documentElement.style.setProperty('--text-main','#1e1b4b');
+      document.documentElement.style.setProperty('--text-sub','#6b7280');
+      document.body.style.background='';
+    }
+  }
+  function saveProfile(){
+    const name=document.getElementById('profileName').value.trim();
+    if(name){document.getElementById('displayName').textContent=name;document.getElementById('bigAvatar').textContent=name.charAt(0).toUpperCase();}
+    showToast();
+  }
+  function showToast(){
+    const t=document.getElementById('saveToast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2500);
+  }
+</script>
+</body>
+</html>

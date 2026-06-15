@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Learn Hub — Quiz</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="blob-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <nav class="topnav">
+    <div class="nav-brand" onclick="window.location.href='student.html'">
+      <div class="nav-logo">SL</div>
+      <div class="nav-title">Smart Learn Hub</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar" id="nav-avatar">S</div>
+        <span id="nav-name">Student</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-inner">
+
+      <button class="back-btn" onclick="window.location.href='chapters.html'">
+        ← Back to Chapters
+      </button>
+
+      <!-- Quiz not found -->
+      <div id="no-quiz" style="display:none; text-align:center; margin-top:40px;">
+        <div style="font-size:48px;">📭</div>
+        <h3 style="margin-top:12px; color:var(--slate);">No Quiz Available</h3>
+        <p style="color:var(--muted); margin-top:8px;">The teacher hasn't added a quiz for this chapter yet.</p>
+        <button class="btn-secondary" style="margin-top:20px; width:auto; padding:12px 24px;"
+          onclick="window.location.href='chapters.html'">← Go Back</button>
+      </div>
+
+      <!-- Quiz UI -->
+      <div id="quiz-wrap" style="display:none;">
+
+        <div style="text-align:center; margin-bottom:28px;">
+          <h2 id="quiz-title" style="font-size:22px; font-weight:900; color:var(--slate);"></h2>
+          <p id="quiz-chapter" style="color:var(--muted); font-size:14px; margin-top:4px;"></p>
+        </div>
+
+        <!-- Progress bar -->
+        <div style="background:#e0e7ff; border-radius:20px; height:8px; margin-bottom:24px;">
+          <div id="quiz-progress-bar" style="height:8px; border-radius:20px;
+            background:linear-gradient(90deg,var(--indigo),var(--purple));
+            transition:width 0.4s ease; width:0%;"></div>
+        </div>
+
+        <!-- Question card -->
+        <div class="video-box" id="question-card" style="padding:28px;">
+          <div style="font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase;
+            letter-spacing:1px; margin-bottom:12px;">
+            Question <span id="q-num">1</span> of <span id="q-total">5</span>
+          </div>
+          <h3 id="question-text" style="font-size:18px; font-weight:800; color:var(--slate);
+            line-height:1.45; margin-bottom:22px;"></h3>
+          <div id="options-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+
+        <!-- Nav buttons -->
+        <div style="display:flex; gap:12px; margin-top:18px; justify-content:flex-end;">
+          <button class="btn-secondary" id="prev-btn" onclick="goQuestion(-1)"
+            style="width:auto; padding:11px 22px;" disabled>← Prev</button>
+          <button class="btn-primary" id="next-btn" onclick="goQuestion(1)"
+            style="width:auto; padding:11px 22px;">Next →</button>
+          <button class="btn-primary" id="submit-btn" onclick="submitQuiz()"
+            style="display:none; width:auto; padding:11px 26px;
+            background:linear-gradient(135deg,#059669,#34d399);">Submit Quiz ✓</button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    .opt-btn {
+      padding: 13px 16px;
+      border: 2px solid var(--lavender2);
+      border-radius: 12px;
+      background: white;
+      color: var(--slate);
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.18s;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--indigo); background: var(--sky); }
+    .opt-btn.selected { border-color: var(--indigo); background: var(--sky); color: var(--indigo); }
+    .opt-btn.correct  { border-color: #059669; background: #d1fae5; color: #065f46; }
+    .opt-btn.wrong    { border-color: #dc2626; background: #fee2e2; color: #991b1b; }
+    .opt-btn:disabled { cursor: not-allowed; opacity: 0.85; }
+  </style>
+
+  <script>
+    /* ── State ── */
+    let quizData     = [];   // array of {q, options, answer}
+    let currentQ     = 0;
+    let userAnswers  = {};   // { questionIndex: optionIndex }
+    let submitted    = false;
+    let chapterTitle = '';
+
+    window.onload = function () {
+      const role = sessionStorage.getItem('sl_role');
+      if (role !== 'student') { window.location.href = 'index.html'; return; }
+
+      const name = sessionStorage.getItem('sl_name') || 'Student';
+      document.getElementById('nav-avatar').textContent = name[0].toUpperCase();
+      document.getElementById('nav-name').textContent   = name;
+
+      /* Get chapter from session */
+      const chapter = JSON.parse(sessionStorage.getItem('currentChapter'));
+      if (!chapter) { showNoQuiz(); return; }
+      chapterTitle = chapter.title || '';
+
+      /* Look up quiz from localStorage */
+      let quiz = null;
+
+      if (chapter.quizId) {
+        const allQuizzes = JSON.parse(localStorage.getItem('quizzes') || '[]');
+        quiz = allQuizzes.find(q => q.id === chapter.quizId);
+      }
+
+      /* Fallback: quiz object embedded directly on chapter */
+      if (!quiz && chapter.quiz && Array.isArray(chapter.quiz)) {
+        quiz = { title: chapter.title + ' Quiz', questions: chapter.quiz };
+      }
+
+      if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+        showNoQuiz(); return;
+      }
+
+      quizData = quiz.questions;
+      document.getElementById('quiz-title').textContent   = quiz.title || 'Chapter Quiz';
+      document.getElementById('quiz-chapter').textContent = '📚 ' + chapterTitle;
+      document.getElementById('q-total').textContent      = quizData.length;
+
+      document.getElementById('quiz-wrap').style.display = 'block';
+      renderQuestion();
+    };
+
+    /* ── Render current question ── */
+    function renderQuestion() {
+      const q = quizData[currentQ];
+      document.getElementById('q-num').textContent          = currentQ + 1;
+      document.getElementById('question-text').textContent  = q.q;
+
+      /* Progress bar */
+      const pct = ((currentQ + 1) / quizData.length) * 100;
+      document.getElementById('quiz-progress-bar').style.width = pct + '%';
+
+      /* Options */
+      const list = document.getElementById('options-list');
+      list.innerHTML = '';
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.textContent = opt;
+
+        /* Restore previous selection or show result if submitted */
+        if (submitted) {
+          btn.disabled = true;
+          if (i === q.answer) btn.classList.add('correct');
+          else if (i === userAnswers[currentQ] && userAnswers[currentQ] !== q.answer)
+            btn.classList.add('wrong');
+        } else {
+          if (userAnswers[currentQ] === i) btn.classList.add('selected');
+          btn.onclick = () => selectOption(i);
+        }
+        list.appendChild(btn);
+      });
+
+      /* Navigation buttons */
+      document.getElementById('prev-btn').disabled = (currentQ === 0);
+      const isLast = (currentQ === quizData.length - 1);
+      document.getElementById('next-btn').style.display   = isLast ? 'none' : 'inline-flex';
+      document.getElementById('submit-btn').style.display = isLast && !submitted ? 'inline-flex' : 'none';
+    }
+
+    function selectOption(i) {
+      userAnswers[currentQ] = i;
+      document.querySelectorAll('.opt-btn').forEach((btn, idx) => {
+        btn.classList.toggle('selected', idx === i);
+      });
+    }
+
+    function goQuestion(dir) {
+      currentQ = Math.max(0, Math.min(quizData.length - 1, currentQ + dir));
+      renderQuestion();
+    }
+
+    function submitQuiz() {
+      submitted = true;
+
+      /* Calculate score */
+      let score = 0;
+      const answers = quizData.map((q, i) => {
+        const chosen  = userAnswers[i] ?? -1;
+        const correct = q.answer;
+        if (chosen === correct) score++;
+        return { question: q.q, opts: q.options, chosen, correct };
+      });
+
+      /* Save to session for results page */
+      sessionStorage.setItem('sl_score',   score);
+      sessionStorage.setItem('sl_total',   quizData.length);
+      sessionStorage.setItem('sl_answers', JSON.stringify(answers));
+
+      /* Show answers on current question then redirect */
+      renderQuestion();
+      document.getElementById('submit-btn').style.display = 'none';
+      document.getElementById('next-btn').style.display   = 'none';
+
+      setTimeout(() => {
+        window.location.href = 'results.html';
+      }, 1200);
+    }
+
+    function showNoQuiz() {
+      document.getElementById('no-quiz').style.display = 'block';
+      document.getElementById('quiz-wrap').style.display = 'none';
+    }
+
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

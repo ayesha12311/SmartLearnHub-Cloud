@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartLearn – Students</title>
+  <link rel="stylesheet" href="sty.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="theme.js"></script> 
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><i class="fa-solid fa-graduation-cap"></i><span>SmartLearnHub</span></div>
+  <nav class="sidebar-nav">
+    <a href="index.html"    class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="students.html" class="nav-item active"><i class="fa-solid fa-users"></i><span>Students</span></a>
+    <a href="teacher.html"  class="nav-item"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="notes.html"    class="nav-item"><i class="fa-solid fa-note-sticky"></i><span>Notes</span></a>
+    <a href="quiz.html"     class="nav-item"><i class="fa-solid fa-circle-question"></i><span>Quizzes</span></a>
+    <a href="subjects.html" class="nav-item"><i class="fa-solid fa-book-open"></i><span>Education Content</span></a>
+    <a href="progress.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Progress</span></a>
+    <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+  </nav>
+  <a href="index.html" class="nav-item logout"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+</aside>
+
+<main class="main-content">
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon"><i class="fa-solid fa-users"></i></div>
+      <div><h1>Students</h1><p>Manage enrolled students</p></div>
+    </div>
+    <button class="btn-primary" onclick="openAddStudent()">
+      <i class="fa-solid fa-plus"></i> Add Student
+    </button>
+  </div>
+  <div id="studentList"></div>
+</main>
+
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h2><i class="fa-solid fa-user-plus"></i> Add Student</h2>
+      <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <label>Full Name</label>
+      <input type="text" id="sName" placeholder="e.g. Aarav Sharma"/>
+      <label>Grade</label>
+      <input type="text" id="sGrade" placeholder="e.g. 10th"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="addStudent()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+<script>
+  renderStudents('studentList', appData.students);
+
+  function openAddStudent() { document.getElementById('modalOverlay').classList.add('show'); }
+  function closeModal()     { document.getElementById('modalOverlay').classList.remove('show'); }
+
+  function addStudent() {
+    const name  = document.getElementById('sName').value.trim();
+    const grade = document.getElementById('sGrade').value.trim();
+    if (!name) { alert('Name required'); return; }
+    appData.students.push({ id: Date.now(), name, grade, progress: 0 });
+    renderStudents('studentList', appData.students);
+    closeModal();
+    ['sName','sGrade'].forEach(id => document.getElementById(id).value = '');
+  }
+</script>
+</body>
+</html>

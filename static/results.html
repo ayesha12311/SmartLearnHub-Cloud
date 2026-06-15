@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Learn Hub — Results</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="blob-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <nav class="topnav">
+    <div class="nav-brand" onclick="window.location.href='student.html'">
+      <div class="nav-logo">SL</div>
+      <div class="nav-title">Smart Learn Hub</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar" id="nav-avatar">S</div>
+        <span id="nav-name">Student</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="results-outer">
+    <div class="results-wrapper">
+
+      <!-- Score circle -->
+      <div class="score-circle">
+        <div class="score-num"  id="score-display">0/5</div>
+        <div class="score-label">Your Score</div>
+      </div>
+
+      <div class="result-title" id="result-title">Well Done!</div>
+      <div class="result-sub"   id="result-sub">Quiz complete.</div>
+
+      <!-- Answer review -->
+      <div class="answers-list" id="answers-list">
+        <!-- Filled by JavaScript -->
+      </div>
+
+      <!-- Action buttons -->
+      <div class="result-actions">
+        <button class="btn-secondary" onclick="window.location.href='chapters.html'">← Back to Chapters</button>
+        <button class="btn-secondary" onclick="window.location.href='quiz.html'">🔄 Try Again</button>
+        <button class="btn-primary"   style="width:auto;padding:12px 24px;" onclick="window.location.href='student.html'">🏠 Dashboard</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      const role = sessionStorage.getItem('sl_role');
+      if (role !== 'student') { window.location.href = 'index.html'; return; }
+
+      const name    = sessionStorage.getItem('sl_name') || 'Student';
+      const score   = parseInt(sessionStorage.getItem('sl_score') || '0');
+      const total   = parseInt(sessionStorage.getItem('sl_total') || '5');
+      const answers = JSON.parse(sessionStorage.getItem('sl_answers') || '[]');
+      const percent = Math.round(score / total * 100);
+
+      document.getElementById('nav-avatar').textContent  = name[0].toUpperCase();
+      document.getElementById('nav-name').textContent    = name;
+      document.getElementById('score-display').textContent = score + '/' + total;
+
+      /* Title based on score */
+      if      (percent >= 80) document.getElementById('result-title').textContent = '🏆 Excellent Work!';
+      else if (percent >= 60) document.getElementById('result-title').textContent = '👍 Good Job!';
+      else                    document.getElementById('result-title').textContent = '💪 Keep Practising!';
+
+      document.getElementById('result-sub').textContent = 'You scored ' + percent + '% on this quiz.';
+
+      /* Build answer review list */
+      const list = document.getElementById('answers-list');
+      answers.forEach(function (a, i) {
+        const isCorrect = a.chosen === a.correct;
+        const div = document.createElement('div');
+        div.className = 'ans-item ' + (isCorrect ? 'correct' : 'wrong');
+        div.innerHTML =
+          '<div class="ans-icon">' + (isCorrect ? '✅' : '❌') + '</div>' +
+          '<div>' +
+            '<div style="font-weight:700;margin-bottom:3px;">Q' + (i + 1) + ': ' + a.question + '</div>' +
+            '<div style="font-size:12px;opacity:0.82;font-family:Poppins,sans-serif;">' +
+              'Your answer: <b>' + a.opts[a.chosen] + '</b>' +
+              (!isCorrect ? ' &nbsp;·&nbsp; Correct: <b>' + a.opts[a.correct] + '</b>' : '') +
+            '</div>' +
+          '</div>';
+        list.appendChild(div);
+      });
+    };
+
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Learn Hub — Notes</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="blob-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <nav class="topnav">
+    <div class="nav-brand" onclick="window.location.href='student.html'">
+      <div class="nav-logo">SL</div>
+      <div class="nav-title">Smart Learn Hub</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar" id="nav-avatar">S</div>
+        <span id="nav-name">Student</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-inner">
+
+      <button class="back-btn" onclick="window.location.href='chapters.html'">← Back to Chapters</button>
+
+      <div class="video-box">
+
+        <h2 id="chapter-title">Chapter Notes</h2>
+
+        <div id="pdf-wrap" style="margin-top:15px;">
+          <iframe id="pdfViewer"
+            width="100%"
+            height="520px"
+            style="border-radius:12px;border:none;">
+          </iframe>
+        </div>
+
+        <div id="no-notes-msg" style="display:none;text-align:center;padding:40px 20px;">
+          <p style="font-size:2rem;margin-bottom:10px;">📭</p>
+          <p style="color:#6b7280;font-size:0.9rem;">No notes uploaded for this chapter yet.</p>
+        </div>
+
+        <div class="video-meta" id="notes-filename">View Notes • PDF Format</div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      var role = sessionStorage.getItem('sl_role');
+      if (role !== 'student') {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      var name = sessionStorage.getItem('sl_name') || 'Student';
+      document.getElementById('nav-avatar').textContent = name[0].toUpperCase();
+      document.getElementById('nav-name').textContent = name;
+
+      // Read the payload saved by chapters.html
+      var raw = sessionStorage.getItem('currentNotes');
+      if (!raw) {
+        alert('No notes selected!');
+        window.location.href = 'chapters.html';
+        return;
+      }
+
+      var payload;
+      try { payload = JSON.parse(raw); } catch(e) { payload = null; }
+
+      // Support both formats:
+      // 1. New format: { chapterTitle, fileUrl, fileName }
+      // 2. Old format: { title, notes }
+      var title    = (payload && (payload.chapterTitle || payload.title)) || 'Chapter';
+      var notesUrl = (payload && (payload.fileUrl || payload.notes))      || '';
+      var fileName = (payload && payload.fileName)                         || '';
+
+      document.getElementById('chapter-title').textContent = title;
+
+      if (notesUrl) {
+        document.getElementById('pdfViewer').src = notesUrl;
+        if (fileName) {
+          document.getElementById('notes-filename').textContent = '📄 ' + fileName;
+        }
+      } else {
+        document.getElementById('pdf-wrap').style.display = 'none';
+        document.getElementById('notes-filename').style.display = 'none';
+        document.getElementById('no-notes-msg').style.display = 'block';
+      }
+    };
+
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+  </script>
+
+</body>
+</html>

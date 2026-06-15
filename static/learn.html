@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smart Learn Hub — Learn</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <div class="blob-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <nav class="topnav">
+    <div class="nav-brand" onclick="window.location.href='student.html'">
+      <div class="nav-logo">SL</div>
+      <div class="nav-title">Smart Learn Hub</div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar" id="nav-avatar">S</div>
+        <span id="nav-name">Student</span>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="page-inner">
+
+      <button class="back-btn" onclick="window.location.href='chapters.html'">← Back to Chapters</button>
+
+      <div class="learn-grid">
+
+        <!-- Left: Video -->
+        <div>
+          <div class="video-box">
+
+            <h2 id="chapter-title">Chapter Title</h2>
+
+            <video id="videoPlayer" controls width="100%" style="border-radius:12px;margin-top:14px;">
+              <source id="videoSource" src="" type="video/mp4">
+              Your browser does not support video.
+            </video>
+
+            <div class="video-meta" id="video-filename">Uploaded Video • Play &amp; Learn</div>
+
+          </div>
+
+          <div id="no-video-msg" style="display:none;text-align:center;padding:40px 20px;background:#fff;border-radius:16px;margin-top:16px;box-shadow:0 2px 12px rgba(0,0,0,0.07);">
+            <p style="font-size:2rem;margin-bottom:10px;">📭</p>
+            <p style="color:#6b7280;font-size:0.9rem;">No video uploaded for this chapter yet.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      var role = sessionStorage.getItem('sl_role');
+      if (role !== 'student') {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      var name = sessionStorage.getItem('sl_name') || 'Student';
+      document.getElementById('nav-avatar').textContent = name[0].toUpperCase();
+      document.getElementById('nav-name').textContent = name;
+
+      // Read the payload saved by chapters.html
+      var raw = sessionStorage.getItem('currentVideo');
+      if (!raw) {
+        alert('No video selected!');
+        window.location.href = 'chapters.html';
+        return;
+      }
+
+      var payload;
+      try { payload = JSON.parse(raw); } catch(e) { payload = null; }
+
+      // Support both formats:
+      // 1. New format: { chapterTitle, fileUrl, fileName }
+      // 2. Old format (chapters.html stores full chapter object): { title, video }
+      var title    = (payload && (payload.chapterTitle || payload.title)) || 'Chapter';
+      var videoUrl = (payload && (payload.fileUrl || payload.video))      || '';
+      var fileName = (payload && payload.fileName)                         || '';
+
+      document.getElementById('chapter-title').textContent = title;
+
+      if (videoUrl) {
+        var source = document.getElementById('videoSource');
+        source.src = videoUrl;
+        document.getElementById('videoPlayer').load();
+        if (fileName) {
+          document.getElementById('video-filename').textContent = '▶ ' + fileName;
+        }
+      } else {
+        document.getElementById('videoPlayer').style.display = 'none';
+        document.getElementById('video-filename').style.display = 'none';
+        document.getElementById('no-video-msg').style.display = 'block';
+      }
+    };
+
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

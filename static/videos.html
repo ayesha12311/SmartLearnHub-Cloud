@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Lectures</title>
+    <link rel="stylesheet" href="style.css">
+    <style>body {
+    font-family: Arial;
+    background-color: #f5f7fb;
+    margin: 0;
+    padding: 0;
+}
+
+/* Title */
+.title {
+    text-align: center;
+    padding: 20px;
+    background-color: #4da6ff;
+    color: white;
+    margin: 0;
+}
+
+/* Upload Section */
+.upload-section {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px;
+}
+
+.upload-section button {
+    padding: 8px 15px;
+    background-color: #4da6ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Video Grid */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Video Style */
+video {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}</style>
+</head>
+<body>
+
+<h2>Video Lectures</h2>
+
+<!-- Add Video Button -->
+<input type="file" id="videoInput" accept="video/*">
+<button onclick="addVideo()">Add Video</button>
+
+<!-- Video Container -->
+<div id="videoContainer">
+  <P>Lecture 1</P>
+  <video width="300" controls>
+  <source src="videos/SmartLearn – 1.mp4" type="video/mp4">
+</video>
+
+<p>Lecture 2</p>
+<video width="300" controls>
+  <source src="videos/SmartLearn – 1.mp4" type="video/mp4">
+</video>
+  </div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

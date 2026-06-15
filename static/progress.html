@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartLearn – Progress</title>
+  <link rel="stylesheet" href="sty.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="theme.js"></script> 
+  <style>
+    .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:700px){.chart-grid{grid-template-columns:1fr;}}
+    .chart-card{background:var(--white);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);}
+    .chart-card h3{font-family:var(--font-display);font-size:1rem;font-weight:800;color:var(--text-main);margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+    .chart-card h3 i{color:var(--purple-mid);}
+    .bar-chart{display:flex;align-items:flex-end;gap:12px;height:160px;}
+    .bar-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;}
+    .bar{width:100%;border-radius:8px 8px 0 0;transition:height 0.6s cubic-bezier(0.34,1.56,0.64,1);position:relative;cursor:pointer;}
+    .bar:hover::after{content:attr(data-val);position:absolute;top:-26px;left:50%;transform:translateX(-50%);background:var(--purple-dark);color:white;font-size:0.72rem;font-weight:700;padding:2px 7px;border-radius:6px;white-space:nowrap;}
+    .bar-label{font-size:0.72rem;color:var(--text-sub);text-align:center;font-weight:600;}
+    .donut-wrap{display:flex;align-items:center;gap:24px;}
+    .donut{width:130px;height:130px;min-width:130px;border-radius:50%;background:conic-gradient(var(--purple-mid) 0% 78%,#e5e7eb 78% 100%);display:flex;align-items:center;justify-content:center;position:relative;}
+    .donut::after{content:'';position:absolute;width:78px;height:78px;background:var(--white);border-radius:50%;}
+    .donut-text{position:absolute;z-index:1;font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:var(--purple-mid);}
+    .donut-legend{display:flex;flex-direction:column;gap:10px;}
+    .legend-item{display:flex;align-items:center;gap:8px;}
+    .legend-dot{width:12px;height:12px;border-radius:50%;}
+    .legend-label{font-size:0.82rem;color:var(--text-sub);}
+    .legend-val{font-size:0.82rem;font-weight:700;color:var(--text-main);margin-left:auto;}
+    .activity-list{display:flex;flex-direction:column;gap:10px;}
+    .activity-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--gray-50);border-radius:10px;}
+    .activity-dot{width:36px;height:36px;min-width:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.95rem;}
+    .activity-dot.learn{background:var(--purple-pale);color:var(--purple-mid);}
+    .activity-dot.quiz{background:#fef3c7;color:#d97706;}
+    .activity-dot.notes{background:#dbeafe;color:#2563eb;}
+    .activity-info{flex:1;}
+    .activity-info h4{font-size:0.88rem;font-weight:700;}
+    .activity-info p{font-size:0.76rem;color:var(--text-sub);margin-top:1px;}
+    .activity-time{font-size:0.76rem;color:var(--gray-400);}
+    .chapter-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+    .chapter-name{flex:1;font-size:0.86rem;font-weight:600;color:var(--text-main);}
+    .ch-bar-wrap{flex:2;display:flex;align-items:center;gap:10px;}
+    .ch-bar{flex:1;height:10px;background:var(--gray-200);border-radius:10px;overflow:hidden;}
+    .ch-bar-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--purple-mid),var(--purple-light));transition:width 0.8s cubic-bezier(0.34,1.56,0.64,1);}
+    .ch-pct{font-size:0.80rem;font-weight:700;color:var(--purple-mid);min-width:36px;text-align:right;}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo"><i class="fa-solid fa-graduation-cap"></i><span>SmartLearnHub</span></div>
+  <nav class="sidebar-nav">
+    <a href="index.html"    class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="students.html" class="nav-item"><i class="fa-solid fa-users"></i><span>Students</span></a>
+    <a href="teacher.html"  class="nav-item"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="notes.html"    class="nav-item"><i class="fa-solid fa-note-sticky"></i><span>Notes</span></a>
+    <a href="quiz.html"     class="nav-item"><i class="fa-solid fa-circle-question"></i><span>Quizzes</span></a>
+    <a href="subjects.html" class="nav-item"><i class="fa-solid fa-book-open"></i><span>Education Content</span></a>
+    <a href="progress.html" class="nav-item active"><i class="fa-solid fa-chart-line"></i><span>Progress</span></a>
+    <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+  </nav>
+  <a href="login.html" class="nav-item logout"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+</aside>
+<main class="main-content">
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon"><i class="fa-solid fa-chart-line"></i></div>
+      <div><h1>My Progress</h1><p>Track your learning journey</p></div>
+    </div>
+    <div class="header-right"><div class="user-avatar">JS</div></div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon purple"><i class="fa-solid fa-book-open-reader"></i></div><div class="stat-info"><span class="stat-value">6</span><span class="stat-label">Chapters Completed</span></div></div>
+    <div class="stat-card"><div class="stat-icon orange"><i class="fa-solid fa-trophy"></i></div><div class="stat-info"><span class="stat-value">82%</span><span class="stat-label">Avg Quiz Score</span></div></div>
+    <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-fire"></i></div><div class="stat-info"><span class="stat-value">7</span><span class="stat-label">Day Streak 🔥</span></div></div>
+    <div class="stat-card"><div class="stat-icon blue"><i class="fa-solid fa-clock"></i></div><div class="stat-info"><span class="stat-value">14h</span><span class="stat-label">Study Time</span></div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3><i class="fa-solid fa-chart-bar"></i> Quiz Scores per Chapter</h3>
+      <div class="bar-chart" id="barChart"></div>
+    </div>
+    <div class="chart-card">
+      <h3><i class="fa-solid fa-circle-half-stroke"></i> Overall Completion</h3>
+      <div class="donut-wrap">
+        <div class="donut"><span class="donut-text">78%</span></div>
+        <div class="donut-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--purple-mid);"></div><span class="legend-label">Completed</span><span class="legend-val">78%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--gray-200);"></div><span class="legend-label">Remaining</span><span class="legend-val">22%</span></div>
+          <div class="legend-item" style="margin-top:8px;flex-direction:column;align-items:flex-start;gap:4px;"><span style="font-size:0.78rem;color:var(--text-sub);">6 of 8 chapters done</span><span style="font-size:0.78rem;color:var(--text-sub);">3 quizzes passed</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <h3><i class="fa-solid fa-list-check"></i> Chapter-wise Progress</h3>
+    <div id="chapterProgress"></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3><i class="fa-solid fa-chart-line"></i> Weekly Study Activity</h3>
+      <svg viewBox="0 0 280 120" width="100%" style="overflow:visible;">
+        <line x1="0" y1="30"  x2="280" y2="30"  stroke="#e5e7eb" stroke-width="1"/>
+        <line x1="0" y1="60"  x2="280" y2="60"  stroke="#e5e7eb" stroke-width="1"/>
+        <line x1="0" y1="90"  x2="280" y2="90"  stroke="#e5e7eb" stroke-width="1"/>
+        <line x1="0" y1="110" x2="280" y2="110" stroke="#e5e7eb" stroke-width="1"/>
+        <path d="M0,90 L40,70 L80,80 L120,40 L160,55 L200,30 L240,45 L280,25 L280,110 L0,110 Z" fill="url(#areaGrad)" opacity="0.3"/>
+        <path d="M0,90 L40,70 L80,80 L120,40 L160,55 L200,30 L240,45 L280,25" fill="none" stroke="var(--purple-mid)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="0"   cy="90" r="4" fill="var(--purple-mid)"/>
+        <circle cx="40"  cy="70" r="4" fill="var(--purple-mid)"/>
+        <circle cx="80"  cy="80" r="4" fill="var(--purple-mid)"/>
+        <circle cx="120" cy="40" r="4" fill="var(--purple-mid)"/>
+        <circle cx="160" cy="55" r="4" fill="var(--purple-mid)"/>
+        <circle cx="200" cy="30" r="4" fill="var(--purple-mid)"/>
+        <circle cx="240" cy="45" r="4" fill="var(--purple-mid)"/>
+        <circle cx="280" cy="25" r="5" fill="var(--purple-dark)" stroke="white" stroke-width="2"/>
+        <text x="0"   y="125" font-size="9" fill="#9ca3af" text-anchor="middle" font-family="Poppins">Mon</text>
+        <text x="40"  y="125" font-size="9" fill="#9ca3af" text-anchor="middle" font-family="Poppins">Tue</text>
+        <text x="80"  y="125" font-size="9" fill="#9ca3af" text-anchor="middle" font-family="Poppins">Wed</text>
+        <text x="120" y="125" font-size="9" fill="#9ca3af" text-anchor="middle" font-family="Poppins">Thu</text>
+        <text x="160" y="125" font-size="9" fill="#9ca3af" text-anchor="middle" font-family="Poppins">Fri</text>
+        <text x="200" y="125" font-size="9" fill="#9ca3af" text-anchor="middle" font-family="Poppins">Sat</text>
+        <text x="240" y="125" font-size="9" fill="#9ca3af" text-anchor="middle" font-family="Poppins">Sun</text>
+        <text x="280" y="125" font-size="9" fill="#7c3aed" text-anchor="middle" font-family="Poppins" font-weight="700">Now</text>
+        <defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--purple-mid)" stop-opacity="0.5"/><stop offset="100%" stop-color="var(--purple-mid)" stop-opacity="0"/></linearGradient></defs>
+      </svg>
+    </div>
+    <div class="chart-card">
+      <h3><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</h3>
+      <div class="activity-list">
+        <div class="activity-item"><div class="activity-dot learn"><i class="fa-solid fa-play"></i></div><div class="activity-info"><h4>Watched: Control Structure</h4><p>Chapter 6 • Video completed</p></div><div class="activity-time">2h ago</div></div>
+        <div class="activity-item"><div class="activity-dot quiz"><i class="fa-solid fa-list-check"></i></div><div class="activity-info"><h4>Quiz: Python Basics</h4><p>Score: 3/3 • Perfect!</p></div><div class="activity-time">Yesterday</div></div>
+        <div class="activity-item"><div class="activity-dot notes"><i class="fa-solid fa-file-lines"></i></div><div class="activity-info"><h4>Downloaded: Healthy Habits PDF</h4><p>Chapter 4 Notes</p></div><div class="activity-time">2 days ago</div></div>
+        <div class="activity-item"><div class="activity-dot learn"><i class="fa-solid fa-play"></i></div><div class="activity-info"><h4>Watched: Intro to Python</h4><p>Chapter 1 • Video completed</p></div><div class="activity-time">3 days ago</div></div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="data.js"></script><script src="script.js"></script>
+<script>
+  const scores=[88,72,95,60,83,77,91,65];
+  const colors=['#7c3aed','#6366f1','#8b5cf6','#a78bfa','#7c3aed','#6366f1','#8b5cf6','#a78bfa'];
+  const barChart=document.getElementById('barChart');
+  appData.chapters.forEach((ch,i)=>{
+    const pct=scores[i]||70, h=Math.round((pct/100)*140);
+    const t=ch.title.split(' ').slice(0,2).join(' ');
+    barChart.innerHTML+=`<div class="bar-group"><div class="bar" data-val="${pct}%" style="height:${h}px;background:${colors[i]};opacity:${0.6+i*0.05};"></div><div class="bar-label">${t}</div></div>`;
+  });
+  const progValues=[100,100,85,60,100,75,30,0];
+  const prog=document.getElementById('chapterProgress');
+  appData.chapters.forEach((ch,i)=>{
+    const pct=progValues[i]||0;
+    prog.innerHTML+=`<div class="chapter-row"><div class="chapter-name">${ch.title}</div><div class="ch-bar-wrap"><div class="ch-bar"><div class="ch-bar-fill" style="width:${pct}%;"></div></div><div class="ch-pct">${pct}%</div></div></div>`;
+  });
+</script>
+</body>
+</html>

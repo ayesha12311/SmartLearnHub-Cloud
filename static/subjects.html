@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SmartLearn – Education Content</title>
+  <link rel="stylesheet" href="sty.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="theme.js"></script> 
+</head>
+<body>
+    <!-- Education content - Main page -->
+
+<aside class="sidebar">
+  <div class="sidebar-logo"><i class="fa-solid fa-graduation-cap"></i><span>SmartLearnHub</span></div>
+  <nav class="sidebar-nav">
+    <a href="index.html"    class="nav-item"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+    <a href="students.html" class="nav-item"><i class="fa-solid fa-users"></i><span>Students</span></a>
+    <a href="teacher.html"  class="nav-item"><i class="fa-solid fa-chalkboard-user"></i><span>Teacher</span></a>
+    <a href="notes.html"    class="nav-item"><i class="fa-solid fa-note-sticky"></i><span>Notes</span></a>
+    <a href="quiz.html"     class="nav-item"><i class="fa-solid fa-circle-question"></i><span>Quizzes</span></a>
+    <a href="subjects.html" class="nav-item active"><i class="fa-solid fa-book-open"></i><span>Education Content</span></a>
+    <a href="progress.html" class="nav-item"><i class="fa-solid fa-chart-line"></i><span>Progress</span></a>
+    <a href="settings.html" class="nav-item"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+  </nav>
+  <a href="index.html" class="nav-item logout"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a>
+</aside>
+
+<main class="main-content">
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-icon"><i class="fa-solid fa-laptop"></i></div>
+      <div><h1>Education Content</h1><p>Select a chapter to start learning</p></div>
+    </div>
+    <button class="btn-primary" onclick="openAddModal()">
+      <i class="fa-solid fa-plus"></i> Add Content
+    </button>
+  </div>
+
+  <div class="search-bar-wrapper">
+    <div class="search-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="searchInput" placeholder="Search Content..." oninput="filterContent()"/>
+    </div>
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+      <button class="filter-btn" onclick="setFilter('Franklin Sierra', this)">Franklin Sierra</button>
+      <button class="filter-btn" onclick="setFilter('Jasper Blackwell', this)">Jasper Blackwell</button>
+    </div>
+  </div>
+
+  <div class="content-list" id="contentList"></div>
+</main>
+
+<!-- ADD CONTENT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2><i class="fa-solid fa-plus-circle"></i> Add New Content</h2>
+      <button class="modal-close" onclick="closeAddModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <label>Chapter Title</label>
+      <input type="text" id="newTitle" placeholder="e.g. Introduction to Python"/>
+      <label>Author Name</label>
+      <input type="text" id="newAuthor" placeholder="e.g. Franklin Sierra"/>
+      <label>Video File / URL</label>
+      <input type="text" id="newVideo" placeholder="videos/chapter1.mp4"/>
+      <label>Notes File / URL</label>
+      <input type="text" id="newNotes" placeholder="notes/chapter1.pdf"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeAddModal()">Cancel</button>
+      <button class="btn-primary" onclick="addContent()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+    </div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+<script>
+  let activeFilter = 'all';
+  renderContentList('contentList', appData.chapters);
+
+  function filterContent() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = appData.chapters.filter(c => {
+      const matchQ = c.title.toLowerCase().includes(q) || c.author.toLowerCase().includes(q);
+      const matchF = activeFilter === 'all' || c.author === activeFilter;
+      return matchQ && matchF;
+    });
+    renderContentList('contentList', filtered);
+  }
+
+  function setFilter(author, btn) {
+    activeFilter = author;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterContent();
+  }
+
+  function openAddModal()  { document.getElementById('modalOverlay').classList.add('show'); }
+  function closeAddModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+  function closeModal(e)   { if (e.target === document.getElementById('modalOverlay')) closeAddModal(); }
+
+  function addContent() {
+    const title  = document.getElementById('newTitle').value.trim();
+    const author = document.getElementById('newAuthor').value.trim();
+    const video  = document.getElementById('newVideo').value.trim();
+    const notes  = document.getElementById('newNotes').value.trim();
+    if (!title || !author) { alert('Title and Author are required!'); return; }
+    appData.chapters.push({ title, author, video: video || '#', notes: notes || '#' });
+    renderContentList('contentList', appData.chapters);
+    closeAddModal();
+    ['newTitle','newAuthor','newVideo','newNotes'].forEach(id => document.getElementById(id).value = '');
+  }
+</script>
+</body>
+</html>
